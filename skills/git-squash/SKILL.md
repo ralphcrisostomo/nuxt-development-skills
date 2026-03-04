@@ -80,11 +80,25 @@ Confirm: clean working tree, squash commit visible at HEAD, no leftover staged c
 
 ### Delete local branch
 
+First, try safe delete:
+
 ```bash
 git branch -d <branch>
 ```
 
-Use `-d` (safe delete) — git will refuse if the branch has unmerged changes. Never use `-D`.
+If `-d` fails because git doesn't recognise the squash merge (expected — squash merges don't preserve commit ancestry), verify there is zero diff between main and the branch:
+
+```bash
+git diff main <branch>
+```
+
+If the diff is empty (content fully merged), force-delete is safe:
+
+```bash
+git branch -D <branch>
+```
+
+If there IS a diff, do not delete — something was lost in the squash. Investigate before proceeding.
 
 ### Delete remote branch (if exists)
 
@@ -108,7 +122,7 @@ git push origin --delete <branch>
 - Always delegate the commit to `/git-commit` — never write commit messages directly.
 - Abort on merge conflicts — never auto-resolve.
 - Never force-push (`--force`, `--force-with-lease`).
-- Never use `git branch -D` — only `-d` (safe delete).
+- Prefer `git branch -d` — use `-D` only after verifying zero diff between main and the branch (squash merges don't preserve ancestry, so `-d` will fail even when content is fully merged).
 - If any step fails, stop and report the error — do not continue the workflow.
 
 ## Quick Reference
@@ -118,4 +132,4 @@ git push origin --delete <branch>
 - `git merge --squash <branch>` — abort on conflicts, suggest rebase.
 - Delegate commit to `/git-commit` (Sensitive File Guard, Conventional Commits, heredoc).
 - Verify: `git log`, `git status`, `git diff`.
-- Cleanup: `git branch -d`, `git push origin --delete` (if remote exists).
+- Cleanup: `git branch -d` (fall back to `-D` after verifying zero diff), `git push origin --delete` (if remote exists).
