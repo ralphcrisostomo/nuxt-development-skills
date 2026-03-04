@@ -1,4 +1,4 @@
-# git-commit-skill
+# git-commit
 
 A project-agnostic AI skill for safe, structured git commits. Designed for [Claude Code](https://claude.ai/code) and compatible with any AI agent that loads `.claude/skills/` or `.agents/skills/` files.
 
@@ -17,12 +17,12 @@ Copy `SKILL.md` into your project's skill directory:
 
 ```bash
 # For Claude Code
-mkdir -p .claude/skills/git-commit-skill
-cp SKILL.md .claude/skills/git-commit-skill/
+mkdir -p .claude/skills/git-commit
+cp SKILL.md .claude/skills/git-commit/
 
 # Or if using .agents/skills/ as source of truth
-mkdir -p .agents/skills/git-commit-skill
-cp SKILL.md .agents/skills/git-commit-skill/
+mkdir -p .agents/skills/git-commit
+cp SKILL.md .agents/skills/git-commit/
 ```
 
 The skill activates automatically when the agent detects a commit-related task.

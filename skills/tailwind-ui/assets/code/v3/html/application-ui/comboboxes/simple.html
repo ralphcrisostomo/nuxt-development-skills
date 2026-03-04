@@ -1,0 +1,40 @@
+<!-- Include this script tag or install `@tailwindplus/elements` via npm: -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script> -->
+<label for="autocomplete" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Assigned to</label>
+<el-autocomplete class="relative mt-2 block">
+  <input id="autocomplete" type="text" class="block w-full rounded-md bg-white py-1.5 pl-3 pr-12 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500" />
+  <button type="button" class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2">
+    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5 text-gray-400">
+      <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+    </svg>
+  </button>
+
+  <el-options anchor="bottom end" popover class="m-0 max-h-60 w-[var(--input-width)] overflow-auto rounded-md bg-white p-0 py-1 text-base shadow-lg outline outline-1 outline-black/5 [--anchor-gap:theme(spacing.1)] [transition-behavior:allow-discrete] data-[closed]:data-[leave]:opacity-0 data-[leave]:transition data-[leave]:duration-100 data-[leave]:ease-in sm:text-sm dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+    <el-option value="Leslie Alexander" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Leslie Alexander</el-option>
+    <el-option value="Michael Foster" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Michael Foster</el-option>
+    <el-option value="Dries Vincent" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Dries Vincent</el-option>
+    <el-option value="Lindsay Walton" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Lindsay Walton</el-option>
+    <el-option value="Courtney Henry" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Courtney Henry</el-option>
+    <el-option value="Tom Cook" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Tom Cook</el-option>
+    <el-option value="Whitney Francis" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Whitney Francis</el-option>
+    <el-option value="Leonard Krasner" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Leonard Krasner</el-option>
+    <el-option value="Floyd Miles" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Floyd Miles</el-option>
+    <el-option value="Emily Selman" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Emily Selman</el-option>
+    <el-option value="Kristin Watson" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Kristin Watson</el-option>
+    <el-option value="Emma Dorsey" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Emma Dorsey</el-option>
+    <el-option value="Alicia Bell" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Alicia Bell</el-option>
+    <el-option value="Jenny Wilson" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Jenny Wilson</el-option>
+    <el-option value="Anna Roberts" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Anna Roberts</el-option>
+    <el-option value="Benjamin Russel" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Benjamin Russel</el-option>
+    <el-option value="Jeffrey Webb" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Jeffrey Webb</el-option>
+    <el-option value="Kathryn Murphy" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Kathryn Murphy</el-option>
+    <el-option value="Lawrence Hunter" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Lawrence Hunter</el-option>
+    <el-option value="Yvette Armstrong" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Yvette Armstrong</el-option>
+    <el-option value="Angela Fisher" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Angela Fisher</el-option>
+    <el-option value="Blake Reid" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Blake Reid</el-option>
+    <el-option value="Hector Gibbons" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Hector Gibbons</el-option>
+    <el-option value="Fabricio Mendes" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Fabricio Mendes</el-option>
+    <el-option value="Jillian Steward" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Jillian Steward</el-option>
+    <el-option value="Chelsea Hagon" class="select-none truncate px-3 py-2 text-gray-900 aria-selected:bg-indigo-600 aria-selected:text-white dark:text-gray-300 dark:aria-selected:bg-indigo-500 [&:not([hidden])]:block">Chelsea Hagon</el-option>
+  </el-options>
+</el-autocomplete>

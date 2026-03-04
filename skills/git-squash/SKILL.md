@@ -1,6 +1,6 @@
 ---
 name: git-squash
-description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to git-commit-skill, and branch cleanup.
+description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to git-commit, and branch cleanup.
 ---
 
 # Git Squash
@@ -9,7 +9,7 @@ description: Use when squash-merging a feature branch into main for linear histo
 
 Before merging, validate the environment:
 
-1. **Determine source branch** — use the argument if provided (`/git-squash-skill feature/my-branch`), otherwise use the current branch.
+1. **Determine source branch** — use the argument if provided (`/git-squash feature/my-branch`), otherwise use the current branch.
 2. **Verify not on main** — if the source branch is `main`, abort with an error.
 3. **Check for uncommitted changes** — run `git status --porcelain`. If there are uncommitted changes, abort and suggest committing or stashing first.
 4. **Verify branch exists** — confirm the source branch exists locally (`git rev-parse --verify <branch>`).
@@ -51,9 +51,9 @@ If the merge produces conflicts:
    ```
 4. Stop — do not proceed.
 
-## Delegate to git-commit-skill
+## Delegate to git-commit
 
-After a successful squash merge, invoke `/git-commit-skill` to handle the commit. This delegates the full 7-step workflow:
+After a successful squash merge, invoke `/git-commit` to handle the commit. This delegates the full 7-step workflow:
 
 1. Sensitive File Guard
 2. Auto-stage tracked changes
@@ -105,7 +105,7 @@ git push origin --delete <branch>
 - **Proceed without confirmation** — pre-flight checks are the safety gate. Do not ask the user to approve before merging.
 - Only merge into `main` — never squash-merge into other branches.
 - Always use `--squash` — never fast-forward or regular merge.
-- Always delegate the commit to `/git-commit-skill` — never write commit messages directly.
+- Always delegate the commit to `/git-commit` — never write commit messages directly.
 - Abort on merge conflicts — never auto-resolve.
 - Never force-push (`--force`, `--force-with-lease`).
 - Never use `git branch -D` — only `-d` (safe delete).
@@ -116,6 +116,6 @@ git push origin --delete <branch>
 - Pre-flight: verify branch, check uncommitted changes, confirm divergence from main.
 - Switch to main, pull latest with `--ff-only`.
 - `git merge --squash <branch>` — abort on conflicts, suggest rebase.
-- Delegate commit to `/git-commit-skill` (Sensitive File Guard, Conventional Commits, heredoc).
+- Delegate commit to `/git-commit` (Sensitive File Guard, Conventional Commits, heredoc).
 - Verify: `git log`, `git status`, `git diff`.
 - Cleanup: `git branch -d`, `git push origin --delete` (if remote exists).
