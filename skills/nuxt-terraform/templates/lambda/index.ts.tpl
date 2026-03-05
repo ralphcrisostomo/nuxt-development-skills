@@ -1,7 +1,7 @@
 // terraform/lambda/src/{{FULL_NAME}}/index.ts
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handler = async (ctx: any) => {
+export async function handler(ctx: any) {
     console.log('--------------------------------')
     console.log(JSON.stringify(ctx, null, 2))
 
