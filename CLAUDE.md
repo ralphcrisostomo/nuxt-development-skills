@@ -22,6 +22,7 @@ This repo has no root package.json, no build step, and no tests — it is a pure
 | prd | Generate Product Requirements Documents |
 | ralph | Convert PRDs to prd.json for Ralph autonomous agent |
 | tailwind-ui | Tailwind CSS UI patterns from 657 pre-built templates |
+| todo | Scan codebase for incomplete work, maintain living TODO.md grouped by feature for /prd input |
 
 ## Skill File Structure
 
