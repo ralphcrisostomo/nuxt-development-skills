@@ -21,12 +21,14 @@ Run the Pre-flight Setup (below), then take a PRD (markdown file or text) and co
 Run these steps before converting the PRD:
 
 1. **Determine project name** — read `package.json` `name` field; fall back to the current directory basename if `package.json` is missing or has no `name`.
-2. **Copy Ralph runtime files** — if `scripts/ralph/ralph.sh` or `scripts/ralph/CLAUDE.md` are missing in the target project, copy them from this skill's `ralph/` subdirectory (relative to this SKILL.md) to `scripts/ralph/` and `chmod +x scripts/ralph/ralph.sh`.
+2. **Copy Ralph runtime files** — if `scripts/ralph/ralph.sh`, `scripts/ralph/ralph-tree.sh`, or `scripts/ralph/CLAUDE.md` are missing in the target project, copy them from this skill's `ralph/` subdirectory (relative to this SKILL.md) to `scripts/ralph/` and `chmod +x scripts/ralph/ralph.sh scripts/ralph/ralph-tree.sh`.
 3. **Set NTFY_TOPIC** — in the copied `scripts/ralph/ralph.sh`, replace the `<project-name>` placeholder in the `NTFY_TOPIC` line with the actual project name determined in step 1. Only replace if the placeholder `<project-name>` is still present (do not overwrite a user-customized topic).
-4. **Verify ntfy.sh dependency** — confirm `curl` is available (required — ralph.sh uses `curl` to POST notifications to ntfy.sh). Optionally suggest `brew install ntfy` for receiving notifications on the developer's machine (the CLI is not required for sending).
-5. **Confirm setup** — print a short summary:
+4. **Add ralph-tree script to package.json** — if `package.json` exists and does not have a `ralph-tree` script, add `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"` to the `scripts` section. This allows running `bun run ralph-tree <worktree-name>` from the project root.
+5. **Verify ntfy.sh dependency** — confirm `curl` is available (required — ralph.sh uses `curl` to POST notifications to ntfy.sh). Optionally suggest `brew install ntfy` for receiving notifications on the developer's machine (the CLI is not required for sending).
+6. **Confirm setup** — print a short summary:
    - `scripts/ralph/ralph.sh` — exists / copied
    - `scripts/ralph/CLAUDE.md` — exists / copied
+   - `scripts/ralph/ralph-tree.sh` — exists / copied
    - `scripts/ralph/prd.json` — will be written here
    - NTFY_TOPIC — `<resolved topic>`
    - `curl` — available
