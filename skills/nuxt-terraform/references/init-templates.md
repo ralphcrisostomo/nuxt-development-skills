@@ -15,7 +15,7 @@ Files placed in `terraform/envs/staging/`.
 
 | File | Placeholders | Source |
 |---|---|---|
-| `backend.hcl` | `STATE_BUCKET`, `PROJECT_KEBAB`, `AWS_REGION`, `LOCK_TABLE` | [templates/init/envs/staging/backend.hcl.tpl](../templates/init/envs/staging/backend.hcl.tpl) |
+| `backend.hcl` | `STATE_BUCKET`, `PROJECT_KEBAB`, `AWS_REGION`, `LOCK_TABLE`, `AWS_PROFILE` | [templates/init/envs/staging/backend.hcl.tpl](../templates/init/envs/staging/backend.hcl.tpl) |
 | `main.tf` | None | [templates/init/envs/staging/main.tf.tpl](../templates/init/envs/staging/main.tf.tpl) |
 | `outputs.tf` | None | [templates/init/envs/staging/outputs.tf.tpl](../templates/init/envs/staging/outputs.tf.tpl) |
 | `variables.tf` | None | [templates/init/envs/staging/variables.tf.tpl](../templates/init/envs/staging/variables.tf.tpl) |
@@ -29,7 +29,7 @@ Files placed in `terraform/envs/production/`.
 
 | File | Placeholders | Source |
 |---|---|---|
-| `backend.hcl` | `STATE_BUCKET`, `PROJECT_KEBAB`, `AWS_REGION`, `LOCK_TABLE` | [templates/init/envs/production/backend.hcl.tpl](../templates/init/envs/production/backend.hcl.tpl) |
+| `backend.hcl` | `STATE_BUCKET`, `PROJECT_KEBAB`, `AWS_REGION`, `LOCK_TABLE`, `AWS_PROFILE` | [templates/init/envs/production/backend.hcl.tpl](../templates/init/envs/production/backend.hcl.tpl) |
 | `main.tf` | None | [templates/init/envs/production/main.tf.tpl](../templates/init/envs/production/main.tf.tpl) |
 | `outputs.tf` | None | [templates/init/envs/production/outputs.tf.tpl](../templates/init/envs/production/outputs.tf.tpl) |
 | `variables.tf` | `AWS_REGION` | [templates/init/envs/production/variables.tf.tpl](../templates/init/envs/production/variables.tf.tpl) |

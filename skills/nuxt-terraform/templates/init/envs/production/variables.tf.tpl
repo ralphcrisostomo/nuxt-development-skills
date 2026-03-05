@@ -14,6 +14,11 @@ variable "aws_region" {
   default     = "{{AWS_REGION}}"
 }
 
+variable "aws_profile" {
+  description = "AWS CLI profile to use for authentication."
+  type        = string
+}
+
 variable "tags" {
   description = "Additional tags to apply to managed resources."
   type        = map(string)

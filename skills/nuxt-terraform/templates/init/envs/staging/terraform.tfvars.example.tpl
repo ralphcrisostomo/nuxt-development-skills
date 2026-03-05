@@ -5,6 +5,7 @@ PROJECT_ENV      = "{{FUNCTION_PREFIX}}Staging"
 PROJECT_ENV_KEBAB = "{{PROJECT_KEBAB}}-staging"
 PROJECT_KEBAB    = "{{PROJECT_KEBAB}}"
 AWS_REGION       = "{{AWS_REGION}}"
+AWS_PROFILE      = "{{AWS_PROFILE}}"
 AWS_ACCOUNT_ID   = ""
 
 # Domain

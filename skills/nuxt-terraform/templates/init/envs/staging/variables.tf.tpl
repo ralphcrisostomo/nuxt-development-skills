@@ -22,6 +22,11 @@ variable "AWS_REGION" {
   type = string
 }
 
+variable "AWS_PROFILE" {
+  description = "AWS CLI profile to use for authentication."
+  type        = string
+}
+
 variable "AWS_ACCOUNT_ID" {
   type = string
 }

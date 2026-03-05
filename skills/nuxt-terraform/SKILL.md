@@ -109,9 +109,17 @@ All generated projects follow this layout:
 Ask user for:
 1. Project name (any string)
 2. Function prefix (PascalCase, e.g. `MyApp`)
-3. AWS region (default: `ap-southeast-2`)
-4. S3 state bucket name
-5. DynamoDB lock table name
+3. **AWS profile** — follow the AWS Profile Selection flow below
+4. AWS region (default: `ap-southeast-2`)
+5. S3 state bucket name
+6. DynamoDB lock table name
+
+### AWS Profile Selection
+
+1. **Read existing profiles** by parsing `~/.aws/credentials` and `~/.aws/config` — extract all `[profile <name>]` and `[<name>]` section headers
+2. **Present the list** to the user with a numbered selection (include `[default]` if it exists)
+3. **Allow "add new"** — if the user's desired profile isn't listed, ask for the profile name and run `aws configure --profile <name>` to set it up, then continue
+4. The selected profile name becomes `{{AWS_PROFILE}}`
 
 Then generate files using templates from [references/init-templates.md](references/init-templates.md).
 
@@ -124,6 +132,7 @@ Then generate files using templates from [references/init-templates.md](referenc
 - `{{AWS_REGION}}` → chosen region
 - `{{STATE_BUCKET}}` → S3 bucket name
 - `{{LOCK_TABLE}}` → DynamoDB table name
+- `{{AWS_PROFILE}}` → AWS CLI profile name
 
 **Static files** (no placeholders): Copy exactly from template sources:
 - `terraform/functions/base.js` — from [templates/init/functions/base.js](templates/init/functions/base.js)
