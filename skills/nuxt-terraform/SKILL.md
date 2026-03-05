@@ -152,23 +152,27 @@ Then generate files using templates from [references/init-templates.md](referenc
 
 **Never overwrite existing files** — skip if file already exists.
 
-Also add these scripts to `package.json`:
+**Copy scripts** from the skill's [scripts/](scripts/) directory into the target project's `scripts/` directory:
+- `scripts/tf.ts` — terraform init/plan/apply wrapper
+- `scripts/tf-output.ts` — export terraform outputs to .env files
+- `scripts/lambda-build.ts` — bundle and zip Lambda functions with esbuild (requires `esbuild` and `archiver` as devDependencies)
+- `scripts/sync-modules.ts` — sync terraform modules with drift detection
+
+Then add these scripts to `package.json`:
 
 ```json
 {
-  "gen:graphql": "bunx terraform-scaffold graphql",
-  "gen:lambda": "bunx terraform-scaffold lambda",
-  "tf:init:staging": "bunx terraform-scaffold tf staging init",
-  "tf:plan:staging": "bunx terraform-scaffold tf staging plan",
-  "tf:apply:staging": "bunx terraform-scaffold tf staging apply",
-  "tf:build:staging": "bunx terraform-scaffold build --env=staging",
-  "tf:output:staging": "bunx terraform-scaffold tf-output staging",
-  "tf:init:production": "bunx terraform-scaffold tf production init",
-  "tf:plan:production": "bunx terraform-scaffold tf production plan",
-  "tf:apply:production": "bunx terraform-scaffold tf production apply",
-  "tf:build:production": "bunx terraform-scaffold build --env=production",
-  "tf:output:production": "bunx terraform-scaffold tf-output production",
-  "tf:sync-modules": "bunx terraform-scaffold sync-modules"
+  "tf:init:staging": "bun scripts/tf.ts staging init",
+  "tf:plan:staging": "bun scripts/tf.ts staging plan",
+  "tf:apply:staging": "bun scripts/tf.ts staging apply",
+  "tf:build:staging": "bun scripts/lambda-build.ts --env=staging",
+  "tf:output:staging": "bun scripts/tf-output.ts staging",
+  "tf:init:production": "bun scripts/tf.ts production init",
+  "tf:plan:production": "bun scripts/tf.ts production plan",
+  "tf:apply:production": "bun scripts/tf.ts production apply",
+  "tf:build:production": "bun scripts/lambda-build.ts --env=production",
+  "tf:output:production": "bun scripts/tf-output.ts production",
+  "tf:sync-modules": "bun scripts/sync-modules.ts"
 }
 ```
 

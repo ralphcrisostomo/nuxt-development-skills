@@ -83,10 +83,18 @@ Scaffolds the entire project structure with multi-environment support (staging +
     └── hash.ts
 ```
 
+**Scripts copied to `scripts/`:**
+
+| Script | Purpose |
+|--------|---------|
+| `tf.ts` | Terraform init/plan/apply wrapper per environment |
+| `tf-output.ts` | Export terraform outputs to `.env` files |
+| `lambda-build.ts` | Bundle + zip Lambda functions with esbuild |
+| `sync-modules.ts` | Sync terraform modules with drift detection |
+
 **package.json scripts added:**
 
 ```
-gen:graphql          gen:lambda
 tf:init:staging      tf:init:production
 tf:plan:staging      tf:plan:production
 tf:apply:staging     tf:apply:production
