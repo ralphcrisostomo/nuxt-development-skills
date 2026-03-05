@@ -1,5 +1,5 @@
 ---
-name: nuxt-terraform-skill
+name: nuxt-terraform
 description: "Scaffold Nuxt + AWS Terraform infrastructure. Use when adding GraphQL resolvers, Lambda functions, or initializing a new project with AppSync, DynamoDB, Cognito. Triggers on: add graphql resolver, create lambda, scaffold terraform, init terraform, add appsync resolver, add mutation, add query."
 ---
 

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "skills": {
+    "git-commit": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "23b88fb693e37dbb54390a0998c11bb033d543ac8d8ecbca903f81872b212485"
+    },
+    "git-squash": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "99e65fd72460232f6a78e2d5bed7604a5d29e4f06019104238649af31d949c8c"
+    },
+    "nuxt-init": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "43ced549f1ae2fd2b1c579f8781fb040b785371397e53e71e28355ee3c55afbd"
+    },
+    "nuxt-terraform": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "224e441155ed7fd4a3888feba7c488f315e3a26be73a0cfbdc13ddb8e5975090"
+    },
+    "optimise-claude": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "62872e430408dc86508977ec518e177af1a8ea18f63e36b95da1b7cf1356ca83"
+    },
+    "prd": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "e8445eff7538ffd81616cbc2b22c2158320d30b557d0d75ee189bd6fd8530d66"
+    },
+    "ralph": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "d90f49447b13bde001a64eec134d79e6e68bf010447d0ee859810e08314c7d5e"
+    },
+    "tailwind-ui": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "cac63e519f0fbab1380fdec5959eabdf8202a3a4b41321ccba7ebe6a9666fd84"
+    },
+    "nuxt-visual-development": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "e708d0fc9f47aaef5c1d30c7aba4968ea5743bc642d6e36f47081448a0328de6"
+    }
+  }
+}
