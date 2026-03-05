@@ -2,7 +2,7 @@
  * Shared .env file parsing and loading utilities.
  *
  * Extracted from scripts/env-variables.ts so that data-fetch scripts
- * (fetch-netsuite-items, fetch-incentive-solutions-products, etc.) can
+ * (data-fetch scripts, CLI tools, etc.) can
  * reliably load .env files without duplicating parsing logic.
  */
 
