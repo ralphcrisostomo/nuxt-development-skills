@@ -1,5 +1,5 @@
 // Export terraform outputs to .env files
-// Usage: bun scripts/tf-output.ts <environment>
+// Usage: bun scripts/tf/tf-output.ts <environment>
 import { spawnSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -83,7 +83,7 @@ if (!envArg || !VALID_ENVS.includes(envArg as any)) {
       ? `Invalid environment: ${envArg}`
       : "Missing environment argument",
   );
-  console.error("Usage: bun scripts/tf-output.ts <environment>");
+  console.error("Usage: bun scripts/tf/tf-output.ts <environment>");
   console.error("  environment: staging | production");
   process.exit(1);
 }

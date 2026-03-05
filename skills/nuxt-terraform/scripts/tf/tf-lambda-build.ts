@@ -1,5 +1,5 @@
 // Build Lambda functions using esbuild and zip them for deployment
-// Usage: bun scripts/lambda-build.ts --env=staging|production [--function=FunctionName]
+// Usage: bun scripts/tf/tf-lambda-build.ts --env=staging|production [--function=FunctionName]
 // Requires: esbuild (bun add -d esbuild)
 import {
   readdirSync,
@@ -37,7 +37,7 @@ for (const arg of process.argv.slice(2)) {
 }
 
 if (!env) {
-  console.error("Usage: bun scripts/lambda-build.ts --env=staging|production [--function=FunctionName]");
+  console.error("Usage: bun scripts/tf/tf-lambda-build.ts --env=staging|production [--function=FunctionName]");
   process.exit(1);
 }
 

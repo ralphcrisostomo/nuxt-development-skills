@@ -152,27 +152,33 @@ Then generate files using templates from [references/init-templates.md](referenc
 
 **Never overwrite existing files** — skip if file already exists.
 
-**Copy scripts** from the skill's [scripts/](scripts/) directory into the target project's `scripts/` directory:
-- `scripts/tf.ts` — terraform init/plan/apply wrapper
-- `scripts/tf-output.ts` — export terraform outputs to .env files
-- `scripts/lambda-build.ts` — bundle and zip Lambda functions with esbuild (requires `esbuild` and `archiver` as devDependencies)
-- `scripts/sync-modules.ts` — sync terraform modules with drift detection
+**Copy scripts** from the skill's [scripts/tf/](scripts/tf/) directory into the target project's `scripts/tf/` directory:
+- `scripts/tf/tf-run.ts` — terraform init/plan/apply wrapper
+- `scripts/tf/tf-output.ts` — export terraform outputs to .env files
+- `scripts/tf/tf-lambda-build.ts` — bundle and zip Lambda functions with esbuild (requires `esbuild` and `archiver` as devDependencies)
+- `scripts/tf/tf-sync-modules.ts` — sync terraform modules with drift detection
+
+**Install script dependencies** — check if `esbuild` and `archiver` are in `devDependencies` of `package.json`. If missing, run:
+
+```bash
+bun add -d esbuild archiver @types/archiver
+```
 
 Then add these scripts to `package.json`:
 
 ```json
 {
-  "tf:init:staging": "bun scripts/tf.ts staging init",
-  "tf:plan:staging": "bun scripts/tf.ts staging plan",
-  "tf:apply:staging": "bun scripts/tf.ts staging apply",
-  "tf:build:staging": "bun scripts/lambda-build.ts --env=staging",
-  "tf:output:staging": "bun scripts/tf-output.ts staging",
-  "tf:init:production": "bun scripts/tf.ts production init",
-  "tf:plan:production": "bun scripts/tf.ts production plan",
-  "tf:apply:production": "bun scripts/tf.ts production apply",
-  "tf:build:production": "bun scripts/lambda-build.ts --env=production",
-  "tf:output:production": "bun scripts/tf-output.ts production",
-  "tf:sync-modules": "bun scripts/sync-modules.ts"
+  "tf:init:staging": "bun scripts/tf/tf-run.ts staging init",
+  "tf:plan:staging": "bun scripts/tf/tf-run.ts staging plan",
+  "tf:apply:staging": "bun scripts/tf/tf-run.ts staging apply",
+  "tf:build:staging": "bun scripts/tf/tf-lambda-build.ts --env=staging",
+  "tf:output:staging": "bun scripts/tf/tf-output.ts staging",
+  "tf:init:production": "bun scripts/tf/tf-run.ts production init",
+  "tf:plan:production": "bun scripts/tf/tf-run.ts production plan",
+  "tf:apply:production": "bun scripts/tf/tf-run.ts production apply",
+  "tf:build:production": "bun scripts/tf/tf-lambda-build.ts --env=production",
+  "tf:output:production": "bun scripts/tf/tf-output.ts production",
+  "tf:sync-modules": "bun scripts/tf/tf-sync-modules.ts"
 }
 ```
 

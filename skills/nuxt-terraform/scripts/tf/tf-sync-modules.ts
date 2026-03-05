@@ -1,5 +1,5 @@
 // Sync terraform modules from source to project
-// Usage: bun scripts/sync-modules.ts [--check] [--force]
+// Usage: bun scripts/tf/tf-sync-modules.ts [--check] [--force]
 import {
   existsSync,
   mkdirSync,

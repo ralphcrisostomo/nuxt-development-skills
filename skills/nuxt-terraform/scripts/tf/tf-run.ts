@@ -1,5 +1,5 @@
 // Terraform wrapper — runs init/plan/apply for a given environment
-// Usage: bun scripts/tf.ts <environment> <action> [-- <extra terraform args>]
+// Usage: bun scripts/tf/tf-run.ts <environment> <action> [-- <extra terraform args>]
 import { spawnSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -10,7 +10,7 @@ const VALID_ACTIONS = ["init", "plan", "apply"] as const;
 
 function usage(): string {
   return [
-    "Usage: bun scripts/tf.ts <environment> <action> [-- <terraform args>]",
+    "Usage: bun scripts/tf/tf-run.ts <environment> <action> [-- <terraform args>]",
     "  environment: staging | production",
     "  action: init | plan | apply",
   ].join("\n");

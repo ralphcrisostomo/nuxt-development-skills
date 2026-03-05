@@ -83,14 +83,14 @@ Scaffolds the entire project structure with multi-environment support (staging +
     └── hash.ts
 ```
 
-**Scripts copied to `scripts/`:**
+**Scripts copied to `scripts/tf/`:**
 
 | Script | Purpose |
 |--------|---------|
-| `tf.ts` | Terraform init/plan/apply wrapper per environment |
-| `tf-output.ts` | Export terraform outputs to `.env` files |
-| `lambda-build.ts` | Bundle + zip Lambda functions with esbuild |
-| `sync-modules.ts` | Sync terraform modules with drift detection |
+| `scripts/tf/tf-run.ts` | Terraform init/plan/apply wrapper per environment |
+| `scripts/tf/tf-output.ts` | Export terraform outputs to `.env` files |
+| `scripts/tf/tf-lambda-build.ts` | Bundle + zip Lambda functions with esbuild |
+| `scripts/tf/tf-sync-modules.ts` | Sync terraform modules with drift detection |
 
 **package.json scripts added:**
 
