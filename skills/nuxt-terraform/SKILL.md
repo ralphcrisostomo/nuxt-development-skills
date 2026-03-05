@@ -266,8 +266,8 @@ module "appsync_datasource_<modelLower>" {
 module "cognito_user_pool" {
   source                       = "../../modules/cognito_user_pool"
   project                      = var.PROJECT_ENV
-  from_email_address           = "<ask user>"
-  ses_identity_arn             = "<ask user>"
+  from_email_address           = "no-reply@${var.DOMAIN_ONLY}"
+  ses_identity_arn             = local.ses_identity_arn
   pre_signup_lambda_arn        = "<ask user or set to empty string>"
   custom_message_lambda_arn    = "<ask user or set to empty string>"
   post_confirmation_lambda_arn = "<ask user or set to empty string>"
@@ -293,7 +293,7 @@ module "role" {
 }
 ```
 
-Ask the user to provide values for placeholders marked `<ask user>`. For Lambda trigger ARNs, if the trigger Lambdas don't exist yet, the user should create them first or provide empty strings temporarily.
+For Lambda trigger ARNs marked `<ask user or set to empty string>`, if the trigger Lambdas don't exist yet, the user should create them first or provide empty strings temporarily.
 
 **For LAMBDA runtime** — append (wrapped in `# Note: <name> START/END`):
 

@@ -19,6 +19,7 @@ Files placed in `terraform/envs/staging/`.
 | `main.tf` | None | [templates/init/envs/staging/main.tf.tpl](../templates/init/envs/staging/main.tf.tpl) |
 | `outputs.tf` | None | [templates/init/envs/staging/outputs.tf.tpl](../templates/init/envs/staging/outputs.tf.tpl) |
 | `variables.tf` | None | [templates/init/envs/staging/variables.tf.tpl](../templates/init/envs/staging/variables.tf.tpl) |
+| `ses.tf` | None | [templates/init/envs/staging/ses.tf.tpl](../templates/init/envs/staging/ses.tf.tpl) |
 | `versions.tf` | None | [templates/init/envs/staging/versions.tf.tpl](../templates/init/envs/staging/versions.tf.tpl) |
 | `terraform.tfvars.example` | `FUNCTION_PREFIX`, `PROJECT_KEBAB`, `AWS_REGION` | [templates/init/envs/staging/terraform.tfvars.example.tpl](../templates/init/envs/staging/terraform.tfvars.example.tpl) |
 
@@ -32,6 +33,7 @@ Files placed in `terraform/envs/production/`.
 | `main.tf` | None | [templates/init/envs/production/main.tf.tpl](../templates/init/envs/production/main.tf.tpl) |
 | `outputs.tf` | None | [templates/init/envs/production/outputs.tf.tpl](../templates/init/envs/production/outputs.tf.tpl) |
 | `variables.tf` | `AWS_REGION` | [templates/init/envs/production/variables.tf.tpl](../templates/init/envs/production/variables.tf.tpl) |
+| `ses.tf` | None | [templates/init/envs/production/ses.tf.tpl](../templates/init/envs/production/ses.tf.tpl) |
 | `versions.tf` | None | [templates/init/envs/production/versions.tf.tpl](../templates/init/envs/production/versions.tf.tpl) |
 | `terraform.tfvars.example` | `PROJECT_KEBAB`, `AWS_REGION` | [templates/init/envs/production/terraform.tfvars.example.tpl](../templates/init/envs/production/terraform.tfvars.example.tpl) |
 
