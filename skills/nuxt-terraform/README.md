@@ -8,6 +8,8 @@ A Claude Code skill that scaffolds full-stack **Nuxt 4 + AWS Terraform** infrast
 - `add graphql resolver` / `add appsync resolver`
 - `add mutation` / `add query`
 - `create lambda`
+- `add terraform test` / `write tftest`
+- `terraform style` (style guide enforcement)
 
 ## AWS Services
 
@@ -130,6 +132,33 @@ Generates a standalone Lambda function (standard or cron-triggered).
 - Terraform module in `terraform/envs/staging/lambda_function.tf`
 - EventBridge cron rule + target + permission (cron type only)
 
+### 4. Terraform Test
+
+Generates `.tftest.hcl` test files for Terraform modules using Terraform's built-in testing framework.
+
+**User provides:** module path, test type (unit/integration/mock), scenarios to validate.
+
+**Test types:**
+| Type | Mode | Resources | Credentials |
+|------|------|-----------|-------------|
+| Unit | `plan` | None | Required |
+| Integration | `apply` | Real | Required |
+| Mock | `plan` + mock providers | None | Not needed |
+
+**Generated artifacts:**
+- Test file in `terraform/modules/<module>/tests/<name>_<type>_test.tftest.hcl`
+- Mock provider blocks (mock type only)
+
+### 5. Style Guide
+
+All generated Terraform code follows HashiCorp's official style conventions:
+- Two-space indent, aligned equals signs
+- Standard file organization (`terraform.tf`, `providers.tf`, `main.tf`, `variables.tf`, `outputs.tf`, `locals.tf`)
+- Variables with `type` + `description`, outputs with `description`
+- Lowercase underscore naming, singular resource names
+- Security hardening defaults (encryption, private networking, least privilege)
+- `for_each` over `count` for multiple resources
+
 ## Nuxt Composables
 
 | Composable | Purpose |
@@ -174,6 +203,8 @@ All operations are safe to re-run:
 Detailed documentation for each component lives in `references/`:
 
 - `terraform-modules.md` - All 18 module specs
+- `terraform-style-guide.md` - HashiCorp style conventions and code review checklist
+- `terraform-test.md` - Built-in testing framework (.tftest.hcl), mock providers, CI/CD
 - `init-templates.md` - Project scaffold files
 - `composables.md` - Auth state, Cognito auth, GraphQL client
 - `services.md` - Cognito, DynamoDB, S3, SES, NetSuite, Textract

@@ -1,11 +1,15 @@
 ---
 name: nuxt-terraform
-description: "Scaffold Nuxt + AWS Terraform infrastructure. Use when adding GraphQL resolvers, Lambda functions, or initializing a new project with AppSync, DynamoDB, Cognito. Triggers on: add graphql resolver, create lambda, scaffold terraform, init terraform, add appsync resolver, add mutation, add query."
+description: "Scaffold Nuxt + AWS Terraform infrastructure. Use when adding GraphQL resolvers, Lambda functions, initializing a new project with AppSync, DynamoDB, Cognito, writing Terraform tests, or generating/reviewing Terraform code style. Triggers on: add graphql resolver, create lambda, scaffold terraform, init terraform, add appsync resolver, add mutation, add query, add terraform test, write tftest, terraform style."
 ---
 
 # Nuxt + Terraform Scaffold Skill
 
 Generate files for Nuxt + AWS infrastructure projects. This skill replaces the CLI — generate all files directly.
+
+## Style Guide
+
+All generated Terraform code follows HashiCorp's official style conventions. Read [references/terraform-style-guide.md](references/terraform-style-guide.md) for formatting rules, naming conventions, file organization, security best practices, and the code review checklist. Apply these conventions to all `.tf` files produced by any command below.
 
 ## Pre-Requisites
 
@@ -59,6 +63,21 @@ Ask user for:
 
 Read [references/lambda-workflow.md](references/lambda-workflow.md) for Lambda source files, TF module block, cron resources, and dependency checks.
 
+## Command 4: Terraform Test
+
+Generate `.tftest.hcl` test files for Terraform modules. Ask user for:
+1. **Module path** — which module to test (e.g. `./modules/dynamodb_table`)
+2. **Test type** — `unit` (plan mode, fast), `integration` (apply mode, creates resources), or `mock` (plan mode with mock providers, no credentials needed)
+3. **Scenarios** — what behaviors to validate (defaults, edge cases, validation rules)
+
+Read [references/terraform-test.md](references/terraform-test.md) for test file structure, run block syntax, assert patterns, mock provider setup, expect_failures, parallel execution, and CI/CD integration examples.
+
+**Generated artifacts:**
+- Test file in `terraform/modules/<module>/tests/<name>_<type>_test.tftest.hcl`
+- Mock provider blocks when test type is `mock`
+
+**Naming convention:** `<description>_unit_test.tftest.hcl`, `<description>_integration_test.tftest.hcl`, `<description>_mock_test.tftest.hcl`
+
 ## Rules
 
 **Idempotency** — never overwrite existing files during init. Skip if TF module, schema field, GraphQL constant, composable function, or Lambda source already exists. When appending, trim trailing whitespace and add newline before new content.
@@ -70,4 +89,6 @@ Read [references/lambda-workflow.md](references/lambda-workflow.md) for Lambda s
 - Follow exact naming conventions from the table above
 - Verify module dependencies exist; generate if missing (see resolver-workflow.md dependency modules section)
 
-**Post-generation validation**: Run `terraform fmt` on modified `.tf` files, then `terraform validate`. If providers not initialized, skip and inform user to run `terraform init` first.
+**Style compliance**: All generated `.tf` files follow the conventions in [references/terraform-style-guide.md](references/terraform-style-guide.md) — two-space indent, aligned equals signs, meta-arguments first, variables with type+description, descriptive resource names, security hardening defaults.
+
+**Post-generation validation**: Run `terraform fmt` on modified `.tf` files, then `terraform validate`. If providers not initialized, skip and inform user to run `terraform init` first. For test files, run `terraform test` to verify tests pass.
