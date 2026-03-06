@@ -1,20 +1,15 @@
 {
   "version": 1,
   "skills": {
+    "commit": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "a93bb4ad6152968fa166ee43738d53dd52b120401ca55f7b8f18e252644685eb"
+    },
     "frontend-design": {
       "source": "anthropics/claude-code",
       "sourceType": "github",
       "computedHash": "e8118284a6365753790d44bb2758a6032b3af27fa84696428d9233f2be0f4e78"
-    },
-    "git-commit": {
-      "source": "ralphcrisostomo/nuxt-development-skills",
-      "sourceType": "github",
-      "computedHash": "d7c59d3736295d1d69b8e65b4927a407dbdfe3e2369c7e2a281c4651829ea146"
-    },
-    "git-squash": {
-      "source": "ralphcrisostomo/nuxt-development-skills",
-      "sourceType": "github",
-      "computedHash": "34a61b3f858947e2800430fd1de36ed7f2f0d93d89bf75adceecf6a5d8de34a6"
     },
     "nuxt-init": {
       "source": "ralphcrisostomo/nuxt-development-skills",
@@ -45,6 +40,11 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "9b03bb78ec5c81c4e0546dbb78cfc970368c72dcae5482e8c59690175abbc8e7"
+    },
+    "squash": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "c8a06d6d528dbf6db9b97712217393c38a247cc8ada790a5c883c67d114b20a1"
     },
     "tailwind-ui": {
       "source": "ralphcrisostomo/nuxt-development-skills",
