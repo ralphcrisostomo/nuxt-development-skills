@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "frontend-design": {
+      "source": "anthropics/claude-code",
+      "sourceType": "github",
+      "computedHash": "e8118284a6365753790d44bb2758a6032b3af27fa84696428d9233f2be0f4e78"
+    },
     "git-commit": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
@@ -21,7 +26,7 @@
       "sourceType": "github",
       "computedHash": "224e441155ed7fd4a3888feba7c488f315e3a26be73a0cfbdc13ddb8e5975090"
     },
-"optimise-claude": {
+    "optimise-claude": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
       "computedHash": "62872e430408dc86508977ec518e177af1a8ea18f63e36b95da1b7cf1356ca83"
