@@ -25,6 +25,15 @@ Run Pre-flight Setup, then convert a PRD (markdown or text) into `scripts/ralph/
    - `"ralph-audit": "bun scripts/ralph/ralph-audit.ts"`
 5. **Verify curl** — required by ralph.sh for ntfy.sh notifications.
 6. **Confirm setup** — print summary: file status, NTFY_TOPIC, curl availability.
+7. **Create worktree** — derive `<feature-name>` by stripping `ralph/` from prd.json `branchName`. Create at `.claude/worktrees/ralph/<feature-name>/`:
+   - `mkdir -p .claude/worktrees/ralph`
+   - If branch exists locally: `git worktree add .claude/worktrees/ralph/<feature-name> <branchName>`
+   - Otherwise: `git worktree add -b <branchName> .claude/worktrees/ralph/<feature-name> main`
+   - Skip if worktree already exists
+   - Copy `scripts/ralph/{prd.json,CLAUDE.md,ralph.sh,ralph-tree.sh,ralph-audit.ts}` into worktree's `scripts/ralph/`
+   - Copy `progress.txt` if it exists
+   - Commit initial PRD: `git add scripts/ralph/{prd.json,CLAUDE.md,progress.txt}` then `git commit -m "chore(ralph): add PRD for <feature-name>"`
+   - Print launch command: `bun run ralph-tree ralph/<feature-name>`
 
 ## Output Format
 
@@ -94,6 +103,7 @@ Before writing new `prd.json`, check for an existing one with a different `branc
 
 ## Checklist
 
+- [ ] Worktree created at `.claude/worktrees/ralph/<feature-name>/`
 - [ ] Pre-flight complete (runtime files copied, NTFY_TOPIC set, package.json scripts added)
 - [ ] Previous run archived if needed
 - [ ] Each story fits one iteration

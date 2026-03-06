@@ -118,42 +118,9 @@ else
   log "WARNING: No prd.json found at $PRD_FILE"
 fi
 
-# Worktree setup — isolate each ralph session so multiple can run in parallel
-REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)
-if [ -n "$PRD_BRANCH" ] && [ "$PRD_BRANCH" != "unknown" ]; then
-  REPO_NAME=$(basename "$REPO_ROOT")
-  WORKTREE_BASE="$(dirname "$REPO_ROOT")/.worktrees"
-  BRANCH_DIR=$(echo "$PRD_BRANCH" | sed 's|/|-|g')
-  WORKTREE_DIR="$WORKTREE_BASE/$REPO_NAME-$BRANCH_DIR"
-
-  if [ ! -d "$WORKTREE_DIR" ]; then
-    log "Creating worktree at $WORKTREE_DIR for branch $PRD_BRANCH"
-    mkdir -p "$WORKTREE_BASE"
-    if git -C "$REPO_ROOT" show-ref --verify --quiet "refs/heads/$PRD_BRANCH"; then
-      git -C "$REPO_ROOT" worktree add "$WORKTREE_DIR" "$PRD_BRANCH"
-    else
-      git -C "$REPO_ROOT" worktree add -b "$PRD_BRANCH" "$WORKTREE_DIR" main
-    fi
-  else
-    log "Using existing worktree at $WORKTREE_DIR"
-  fi
-
-  # Sync ralph files to worktree
-  RALPH_REL_PATH="${SCRIPT_DIR#$REPO_ROOT/}"
-  WORKTREE_RALPH="$WORKTREE_DIR/$RALPH_REL_PATH"
-  mkdir -p "$WORKTREE_RALPH"
-  cp "$PRD_FILE" "$WORKTREE_RALPH/"
-  [ -f "$PROGRESS_FILE" ] && cp "$PROGRESS_FILE" "$WORKTREE_RALPH/"
-  cp "$SCRIPT_DIR/CLAUDE.md" "$WORKTREE_RALPH/"
-
-  WORK_DIR="$WORKTREE_DIR"
-  WORK_RALPH="$WORKTREE_RALPH"
-  log "Worktree ready at $WORKTREE_DIR"
-else
-  WORK_DIR="$REPO_ROOT"
-  WORK_RALPH="$SCRIPT_DIR"
-  WORKTREE_DIR=""
-fi
+REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || pwd)
+WORK_DIR="$REPO_ROOT"
+WORK_RALPH="$SCRIPT_DIR"
 
 CUMULATIVE_INPUT_TOKENS=0
 CUMULATIVE_OUTPUT_TOKENS=0
@@ -177,7 +144,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
 
   ITER_START=$(date +%s)
 
-  # Run the selected tool from the working directory (worktree or repo root)
+  # Run the selected tool from the working directory
   INPUT_TOKENS="?"
   OUTPUT_TOKENS="?"
   COST_USD="?"
@@ -198,12 +165,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   CUMULATIVE_OUTPUT_TOKENS=$(( CUMULATIVE_OUTPUT_TOKENS + ${OUTPUT_TOKENS:-0} )) 2>/dev/null || true
   CUMULATIVE_COST=$(echo "$CUMULATIVE_COST + ${COST_USD:-0}" | bc 2>/dev/null || echo "$CUMULATIVE_COST")
 
-  # Sync files back from worktree
-  if [ -n "$WORKTREE_DIR" ] && [ -d "$WORKTREE_DIR" ]; then
-    [ -f "$WORK_RALPH/prd.json" ] && cp "$WORK_RALPH/prd.json" "$PRD_FILE"
-    [ -f "$WORK_RALPH/progress.txt" ] && cp "$WORK_RALPH/progress.txt" "$PROGRESS_FILE"
-  fi
-
   ITER_END=$(date +%s)
   ITER_DURATION=$(( ITER_END - ITER_START ))
   ITER_MINS=$(( ITER_DURATION / 60 ))
@@ -223,11 +184,6 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     echo ""
     log "Ralph completed all tasks!"
     log "Completed at iteration $i of $MAX_ITERATIONS"
-    # Clean up worktree
-    if [ -n "$WORKTREE_DIR" ] && [ -d "$WORKTREE_DIR" ]; then
-      log "Cleaning up worktree at $WORKTREE_DIR"
-      git -C "$REPO_ROOT" worktree remove "$WORKTREE_DIR" --force 2>/dev/null || true
-    fi
     CUMULATIVE_INFO="${CUMULATIVE_INPUT_TOKENS}in/${CUMULATIVE_OUTPUT_TOKENS}out (\$${CUMULATIVE_COST})"
     log "Total tokens: $CUMULATIVE_INFO"
     notify "Ralph Complete: ${PRD_NAME:-unknown}" "completed all ${TOTAL_STORIES:-?} stories at iteration $i/$MAX_ITERATIONS in ${ITER_MINS}m${ITER_SECS}s. Total tokens: $CUMULATIVE_INFO" "high" "white_check_mark"
