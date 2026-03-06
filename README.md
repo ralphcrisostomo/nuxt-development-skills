@@ -6,7 +6,7 @@ A consolidated collection of Claude Code agent skills for Nuxt 4 development wor
 
 | Skill | Description |
 | --- | --- |
-| [git-commit](skills/git-commit/) | Smart commit workflow with multi-concern splitting, sensitive-file guarding, and worktree merge support. |
+| [commit](skills/commit/) | Smart commit workflow with multi-concern splitting, sensitive-file guarding, and worktree merge support. |
 | [git-squash](skills/git-squash/) | Squash-merge a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation, and branch cleanup. |
 | [nuxt-init](skills/nuxt-init/) | Scaffold a new Nuxt 4 project with standard config files (prettier, eslint, gitignore, husky, vitest, tsconfig, sops) and bun scripts. |
 | [nuxt-terraform](skills/nuxt-terraform/) | Scaffold Nuxt + AWS Terraform infrastructure with AppSync, DynamoDB, Cognito, Lambda functions, and GraphQL resolvers. |
@@ -28,7 +28,7 @@ For example:
 
 ```bash
 npx skills add ralphcrisostomo/nuxt-development-skills/skills/tailwind-ui
-npx skills add ralphcrisostomo/nuxt-development-skills/skills/git-commit
+npx skills add ralphcrisostomo/nuxt-development-skills/skills/commit
 ```
 
 ## License

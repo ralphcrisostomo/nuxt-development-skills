@@ -9,7 +9,7 @@ A project-agnostic AI skill for squash-merging feature branches into main with l
 | **Pre-flight Checks** | Validates source branch, checks for uncommitted changes, confirms divergence from main before proceeding. |
 | **Squash Merge** | Merges the feature branch into main with `--squash` to keep history linear — one clean commit per branch. |
 | **Conflict Safety** | Aborts immediately on merge conflicts, returns to the source branch, and suggests `git rebase main`. |
-| **Commit Delegation** | Delegates the commit to `git-commit` for Sensitive File Guard, Conventional Commits, and heredoc format. |
+| **Commit Delegation** | Delegates the commit to `commit` for Sensitive File Guard, Conventional Commits, and heredoc format. |
 | **Branch Cleanup** | Safe-deletes the local branch (`-d`) and removes the remote tracking branch if it exists. |
 
 ## Installation
@@ -30,23 +30,23 @@ The skill activates when the agent detects a squash-merge task or is invoked dir
 
 ## Dependency
 
-This skill requires **git-commit** to be installed in the same project. The commit step is fully delegated — `git-squash` never writes commit messages directly.
+This skill requires **commit** to be installed in the same project. The commit step is fully delegated — `git-squash` never writes commit messages directly.
 
 ```bash
-# Ensure git-commit is also installed
-ls .claude/skills/git-commit/SKILL.md
+# Ensure commit is also installed
+ls .claude/skills/commit/SKILL.md
 ```
 
 ## Workflow overview
 
 ```
-Pre-flight → checkout main → git merge --squash → /git-commit → verify → cleanup
+Pre-flight → checkout main → git merge --squash → /commit → verify → cleanup
 ```
 
 1. **Pre-flight** — validate source branch, check uncommitted changes, confirm divergence
 2. **Switch to main** — `git checkout main`, `git pull --ff-only`
 3. **Squash merge** — `git merge --squash <branch>` (abort on conflicts)
-4. **Commit** — delegate to `/git-commit` (guard, stage, message, heredoc, hooks)
+4. **Commit** — delegate to `/commit` (guard, stage, message, heredoc, hooks)
 5. **Verify** — `git log`, `git status`, `git diff`
 6. **Cleanup** — `git branch -d <branch>`, `git push origin --delete <branch>`
 

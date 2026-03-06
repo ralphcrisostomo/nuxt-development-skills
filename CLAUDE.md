@@ -12,7 +12,7 @@ This repo has no root package.json, no build step, and no tests — it is a pure
 
 | Skill | Purpose |
 | --- | --- |
-| git-commit | Smart commit with multi-concern splitting, sensitive-file guarding, worktree merge |
+| commit | Smart commit with multi-concern splitting, sensitive-file guarding, worktree merge |
 | git-squash | Squash-merge feature branches into main with linear history |
 | nuxt-init | Scaffold Nuxt 4 project with standard configs (prettier, eslint, husky, vitest, sops) |
 | nuxt-terraform | Scaffold Nuxt + AWS Terraform (AppSync, DynamoDB, Cognito, Lambda) |

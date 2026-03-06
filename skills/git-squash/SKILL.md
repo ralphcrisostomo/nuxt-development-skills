@@ -1,6 +1,6 @@
 ---
 name: git-squash
-description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to git-commit, and branch cleanup.
+description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to commit, and branch cleanup.
 ---
 
 # Git Squash
@@ -31,9 +31,9 @@ git merge --squash <branch>
 
 On conflicts: `git merge --abort`, switch back to source branch, suggest `git rebase main`, stop.
 
-## Delegate to git-commit
+## Delegate to commit
 
-Invoke `/git-commit` to handle the commit. Do not write commit messages directly.
+Invoke `/commit` to handle the commit. Do not write commit messages directly.
 
 ## Post-merge Verification
 
@@ -66,7 +66,7 @@ git push origin --delete <branch>
 - **Proceed without confirmation** — pre-flight checks are the safety gate.
 - Only merge into `main`.
 - Always use `--squash` — never fast-forward or regular merge.
-- Always delegate the commit to `/git-commit`.
+- Always delegate the commit to `/commit`.
 - Abort on merge conflicts — never auto-resolve.
 - Never force-push.
 - Prefer `git branch -d` — use `-D` only after verifying zero diff.
@@ -74,4 +74,4 @@ git push origin --delete <branch>
 
 ## Quick Reference
 
-Pre-flight → checkout main → `git merge --squash` → `/git-commit` → verify → cleanup (`-d`, fall back to `-D` after zero diff check, delete remote if exists).
+Pre-flight → checkout main → `git merge --squash` → `/commit` → verify → cleanup (`-d`, fall back to `-D` after zero diff check, delete remote if exists).

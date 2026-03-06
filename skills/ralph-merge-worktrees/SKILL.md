@@ -122,7 +122,7 @@ If there are uncommitted changes on main, stop and alert the user.
 Invoke the `/git-squash` skill with the branch name. This handles:
 - Pre-flight checks (branch exists, has diverged from main)
 - `git merge --squash <branchName>`
-- Delegates commit to `/git-commit` (Conventional Commits, Co-Authored-By trailer)
+- Delegates commit to `/commit` (Conventional Commits, Co-Authored-By trailer)
 - Post-merge verification
 - Local branch cleanup (`git branch -d/-D`)
 
