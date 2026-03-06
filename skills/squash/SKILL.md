@@ -1,6 +1,7 @@
 ---
 name: squash
 description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to commit, and branch cleanup.
+model: sonnet, gpt-5.3-codex
 ---
 
 # Git Squash

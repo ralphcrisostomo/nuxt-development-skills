@@ -1,6 +1,7 @@
 ---
 name: ralph-merge-worktrees
 description: "Analyze completed Ralph worktree branches, build a smart merge priority queue, and sequentially squash-merge them into main with worktree cleanup. Use this skill whenever the user wants to merge ralph worktrees, merge completed features, clean up finished ralph branches, process the ralph merge queue, or asks about which ralph branches are ready to merge. Triggers on: merge worktrees, ralph merge, merge completed branches, ralph cleanup, merge queue, which branches are done, squash ralph branches."
+model: opus, gpt-5.1-codex-max
 user-invocable: true
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: todo
 description: "Use when scanning a codebase for incomplete work and maintaining a living TODO.md grouped by feature. Triggers on: scan for todos, find incomplete work, update todo, what needs doing, create todo list."
+model: sonnet, gpt-5.3-codex
 user-invocable: true
 ---
 

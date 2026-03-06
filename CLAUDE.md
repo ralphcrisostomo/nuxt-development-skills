@@ -41,6 +41,7 @@ skills/<name>/
 ## SKILL.md Conventions
 
 - YAML frontmatter with `name` (kebab-case, matches directory) and `description` (starts with "Use when")
+- Optional `model` field with comma-separated recommended models (e.g., `opus, gpt-5.1-codex-max`)
 - Optional `user-invocable: true` for skills invokable via `/skill-name`
 - Target ≤120 lines to reduce token usage (enforced by optimise-claude skill)
 - Canonical section order: Title → When to Use → Workflow/Instructions → Rules/Quick Reference → Validation/Checklist
