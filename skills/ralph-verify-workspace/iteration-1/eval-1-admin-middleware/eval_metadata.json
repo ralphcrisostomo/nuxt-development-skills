@@ -1,0 +1,42 @@
+{
+  "eval_id": 1,
+  "eval_name": "admin-middleware-verification",
+  "prompt": "verify US-001",
+  "assertions": [
+    {
+      "id": "structured-report",
+      "text": "Output contains a structured verification report with pass/fail indicators for each acceptance criterion",
+      "type": "content_check"
+    },
+    {
+      "id": "file-existence-check",
+      "text": "Report verifies that app/middleware/admin.ts exists",
+      "type": "content_check"
+    },
+    {
+      "id": "isadmin-check",
+      "text": "Report verifies that the middleware checks isAdmin from useAuthState()",
+      "type": "content_check"
+    },
+    {
+      "id": "redirect-check",
+      "text": "Report verifies non-admin redirect behavior (to / with toast)",
+      "type": "content_check"
+    },
+    {
+      "id": "reports-page-check",
+      "text": "Report verifies that reports.vue has the admin middleware applied",
+      "type": "content_check"
+    },
+    {
+      "id": "all-criteria-covered",
+      "text": "All 5 acceptance criteria from the PRD are addressed in the report",
+      "type": "content_check"
+    },
+    {
+      "id": "clear-verdict",
+      "text": "Report ends with a clear overall PASS/FAIL verdict",
+      "type": "content_check"
+    }
+  ]
+}

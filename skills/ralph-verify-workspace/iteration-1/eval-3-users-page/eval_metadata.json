@@ -1,0 +1,57 @@
+{
+  "eval_id": 3,
+  "eval_name": "users-page-quick-verify",
+  "prompt": "quick verify US-008",
+  "assertions": [
+    {
+      "id": "structured-report",
+      "text": "Output contains a structured verification report with pass/fail indicators for each acceptance criterion",
+      "type": "content_check"
+    },
+    {
+      "id": "page-file-check",
+      "text": "Report verifies app/pages/admin/users.vue exists",
+      "type": "content_check"
+    },
+    {
+      "id": "layout-middleware-check",
+      "text": "Report verifies definePageMeta with admin layout and middleware",
+      "type": "content_check"
+    },
+    {
+      "id": "table-columns-check",
+      "text": "Report verifies table has expected columns (Avatar, Username, Email, Status, Joined Date)",
+      "type": "content_check"
+    },
+    {
+      "id": "status-badge-check",
+      "text": "Report verifies UBadge usage for status with color variants",
+      "type": "content_check"
+    },
+    {
+      "id": "search-debounce-check",
+      "text": "Report verifies search input with debounce (300ms)",
+      "type": "content_check"
+    },
+    {
+      "id": "pagination-check",
+      "text": "Report verifies pagination with nextToken cursor",
+      "type": "content_check"
+    },
+    {
+      "id": "no-browser-check",
+      "text": "Report does NOT include browser/visual verification (quick mode respected)",
+      "type": "content_check"
+    },
+    {
+      "id": "all-criteria-covered",
+      "text": "All 9 acceptance criteria from the PRD are addressed in the report",
+      "type": "content_check"
+    },
+    {
+      "id": "clear-verdict",
+      "text": "Report ends with a clear overall PASS/FAIL verdict",
+      "type": "content_check"
+    }
+  ]
+}

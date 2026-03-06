@@ -1,0 +1,52 @@
+{
+  "eval_id": 2,
+  "eval_name": "admin-stats-infra-verification",
+  "prompt": "verify US-005",
+  "assertions": [
+    {
+      "id": "structured-report",
+      "text": "Output contains a structured verification report with pass/fail indicators for each acceptance criterion",
+      "type": "content_check"
+    },
+    {
+      "id": "schema-check",
+      "text": "Report verifies getAdminStats query exists in schema.graphql",
+      "type": "content_check"
+    },
+    {
+      "id": "type-fields-check",
+      "text": "Report verifies AdminStats type has all 6 required fields (totalUsers, totalThreads, pendingReports, activeUsersDaily, newUsersDaily, newThreadsDaily)",
+      "type": "content_check"
+    },
+    {
+      "id": "resolver-files-check",
+      "text": "Report verifies AppSync resolver function files exist in terraform/functions/",
+      "type": "content_check"
+    },
+    {
+      "id": "admin-group-check",
+      "text": "Report verifies admin group check in resolver code",
+      "type": "content_check"
+    },
+    {
+      "id": "typescript-type-check",
+      "text": "Report verifies types/adminStats.ts exists with correct interface",
+      "type": "content_check"
+    },
+    {
+      "id": "terraform-wiring-check",
+      "text": "Report verifies terraform modules are wired in main.tf (function + pipeline resolver modules)",
+      "type": "content_check"
+    },
+    {
+      "id": "all-criteria-covered",
+      "text": "All 9 acceptance criteria from the PRD are addressed in the report",
+      "type": "content_check"
+    },
+    {
+      "id": "clear-verdict",
+      "text": "Report ends with a clear overall PASS/FAIL verdict",
+      "type": "content_check"
+    }
+  ]
+}
