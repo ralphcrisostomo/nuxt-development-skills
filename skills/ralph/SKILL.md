@@ -10,29 +10,29 @@ Converts existing PRDs to `prd.json` for Ralph's autonomous execution loop.
 
 ## The Job
 
-Run Pre-flight Setup, then convert a PRD (markdown or text) into `scripts/ralph/prd.json`.
+Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to create the worktree and configure the environment inside it.
 
 ## Pre-flight Setup
 
 1. **Project name** — read `package.json` `name` field; fall back to directory basename.
-2. **Copy runtime files** — if missing in target project, copy from this skill's `ralph/` subdirectory to `scripts/ralph/`:
-   - `ralph.sh`, `ralph-tree.sh` → `chmod +x`
-   - `CLAUDE.md`
-   - `ralph-audit.ts`
-3. **Set NTFY_TOPIC** — in `scripts/ralph/ralph.sh`, replace `<project-name>` placeholder with actual project name. Skip if already customized.
-4. **Add package.json scripts** — if `package.json` exists, add missing entries:
-   - `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"`
-   - `"ralph-audit": "bun scripts/ralph/ralph-audit.ts"`
-5. **Verify curl** — required by ralph.sh for ntfy.sh notifications.
-6. **Confirm setup** — print summary: file status, NTFY_TOPIC, curl availability.
-7. **Create worktree** — derive `<feature-name>` by stripping `ralph/` from prd.json `branchName`. Create at `.claude/worktrees/ralph/<feature-name>/`:
+2. **Create worktree & cd into it** (PRIORITY — do this first after determining `branchName`):
+   - Derive `<feature-name>` by stripping `ralph/` from prd.json `branchName`
    - `mkdir -p .claude/worktrees/ralph`
    - If branch exists locally: `git worktree add .claude/worktrees/ralph/<feature-name> <branchName>`
    - Otherwise: `git worktree add -b <branchName> .claude/worktrees/ralph/<feature-name> main`
    - Skip if worktree already exists
-   - Copy `scripts/ralph/{prd.json,CLAUDE.md,ralph.sh,ralph-tree.sh,ralph-audit.ts}` into worktree's `scripts/ralph/`
-   - Copy `progress.txt` if it exists
-   - Commit initial PRD: `git add scripts/ralph/{prd.json,CLAUDE.md,progress.txt}` then `git commit -m "chore(ralph): add PRD for <feature-name>"`
+   - `cd .claude/worktrees/ralph/<feature-name>/` — **all subsequent steps operate inside the worktree**
+3. **Copy runtime files** — copy from this skill's `ralph/` subdirectory into worktree's `scripts/ralph/`:
+   - `ralph.sh`, `ralph-tree.sh` → `chmod +x`
+   - `CLAUDE.md`, `ralph-audit.ts`, `prd.json`
+   - Copy `progress.txt` if it exists in source project
+4. **Set NTFY_TOPIC** — in worktree's `scripts/ralph/ralph.sh`, replace `<project-name>` placeholder with actual project name. Skip if already customized.
+5. **Add package.json scripts** — if worktree's `package.json` exists, add missing entries:
+   - `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"`
+   - `"ralph-audit": "bun scripts/ralph/ralph-audit.ts"`
+6. **Verify curl** — required by ralph.sh for ntfy.sh notifications.
+7. **Confirm setup & commit** — print summary: file status, NTFY_TOPIC, worktree path, curl availability.
+   - `git add scripts/ralph/{prd.json,CLAUDE.md,progress.txt}` then `git commit -m "chore(ralph): add PRD for <feature-name>"`
    - Print launch command: `bun run ralph-tree ralph/<feature-name>`
 
 ## Output Format
@@ -99,7 +99,7 @@ See `references/example.md` for a full input/output conversion example.
 
 ## Archiving Previous Runs
 
-Before writing new `prd.json`, check for an existing one with a different `branchName`. If different and `progress.txt` has content beyond the header: archive to `archive/YYYY-MM-DD-feature-name/`, then reset `progress.txt`.
+Before writing new `prd.json`, check for an existing one with a different `branchName`. If different and `progress.txt` has content beyond the header: archive to `archive/YYYY-MM-DD-feature-name/` in the source project, copy the archive directory into the worktree's `archive/` as well, then reset `progress.txt`.
 
 ## Checklist
 
