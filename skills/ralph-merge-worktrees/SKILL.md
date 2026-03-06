@@ -117,9 +117,9 @@ git status --porcelain
 
 If there are uncommitted changes on main, stop and alert the user.
 
-### 5b. Squash-Merge via /git-squash
+### 5b. Squash-Merge via /squash
 
-Invoke the `/git-squash` skill with the branch name. This handles:
+Invoke the `/squash` skill with the branch name. This handles:
 - Pre-flight checks (branch exists, has diverged from main)
 - `git merge --squash <branchName>`
 - Delegates commit to `/commit` (Conventional Commits, Co-Authored-By trailer)
@@ -194,7 +194,7 @@ If any branches were skipped due to conflicts, suggest next steps:
 ## Important Notes
 
 - Always get user confirmation before starting the merge queue — this is a destructive operation (worktree removal)
-- Each merge builds on the last — if branch 2 conflicts, branches 3+ might have different conflict profiles than predicted. Re-check is automatic since we run `/git-squash` which does pre-flight
+- Each merge builds on the last — if branch 2 conflicts, branches 3+ might have different conflict profiles than predicted. Re-check is automatic since we run `/squash` which does pre-flight
 - The skill reads PRD files from the worktree directories, not from main — each worktree has its own copy
 - Worktree paths use the feature name without the `ralph/` prefix: `.claude/worktrees/ralph/post-creation/` for branch `ralph/post-creation`
 - After all merges complete, run `bun run lint` on main to verify the combined codebase is healthy

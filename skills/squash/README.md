@@ -1,4 +1,4 @@
-# git-squash
+# squash
 
 A project-agnostic AI skill for squash-merging feature branches into main with linear history. Designed for [Claude Code](https://claude.ai/code) and compatible with any AI agent that loads `.claude/skills/` or `.agents/skills/` files.
 
@@ -18,19 +18,19 @@ Copy `SKILL.md` into your project's skill directory:
 
 ```bash
 # For Claude Code
-mkdir -p .claude/skills/git-squash
-cp SKILL.md .claude/skills/git-squash/
+mkdir -p .claude/skills/squash
+cp SKILL.md .claude/skills/squash/
 
 # Or if using .agents/skills/ as source of truth
-mkdir -p .agents/skills/git-squash
-cp SKILL.md .agents/skills/git-squash/
+mkdir -p .agents/skills/squash
+cp SKILL.md .agents/skills/squash/
 ```
 
 The skill activates when the agent detects a squash-merge task or is invoked directly.
 
 ## Dependency
 
-This skill requires **commit** to be installed in the same project. The commit step is fully delegated — `git-squash` never writes commit messages directly.
+This skill requires **commit** to be installed in the same project. The commit step is fully delegated — `squash` never writes commit messages directly.
 
 ```bash
 # Ensure commit is also installed
@@ -54,10 +54,10 @@ Pre-flight → checkout main → git merge --squash → /commit → verify → c
 
 ```bash
 # Squash-merge the current branch into main
-/git-squash
+/squash
 
 # Squash-merge a specific branch into main
-/git-squash feature/my-branch
+/squash feature/my-branch
 ```
 
 ## Rules

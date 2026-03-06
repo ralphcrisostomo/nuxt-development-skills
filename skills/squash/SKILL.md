@@ -1,5 +1,5 @@
 ---
-name: git-squash
+name: squash
 description: Use when squash-merging a feature branch into main for linear history. Handles pre-flight checks, squash merge, commit delegation to commit, and branch cleanup.
 ---
 
@@ -9,7 +9,7 @@ description: Use when squash-merging a feature branch into main for linear histo
 
 Before merging, validate the environment:
 
-1. **Determine source branch** — use the argument if provided (`/git-squash feature/my-branch`), otherwise use the current branch.
+1. **Determine source branch** — use the argument if provided (`/squash feature/my-branch`), otherwise use the current branch.
 2. **Verify not on main** — abort if source branch is `main`.
 3. **Check for uncommitted changes** — `git status --porcelain`. If dirty, abort and suggest committing or stashing.
 4. **Verify branch exists** — `git rev-parse --verify <branch>`.
