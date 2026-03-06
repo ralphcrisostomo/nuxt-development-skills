@@ -1,7 +1,7 @@
 ---
 name: nuxt-env
 description: "Use when setting up SOPS + age encryption for environment variables. Checks dependencies, creates config, copies scripts, and adds package.json commands. Triggers on: setup sops, setup env encryption, add age encryption, env:pull, env:push."
-model: sonnet, gpt-5.3-codex
+model: sonnet
 user-invocable: true
 ---
 

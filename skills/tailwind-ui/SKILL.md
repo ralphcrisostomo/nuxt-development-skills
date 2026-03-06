@@ -1,7 +1,7 @@
 ---
 name: tailwind-ui
 description: Use when writing HTML/JSX with Tailwind CSS for common UI patterns like heroes, forms, lists, navbars, modals, cards, or any standard web component
-model: haiku, gpt-5.1-codex-mini
+model: haiku
 ---
 
 # Tailwind UI Templates

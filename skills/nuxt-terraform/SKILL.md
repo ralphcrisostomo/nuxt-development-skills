@@ -1,7 +1,7 @@
 ---
 name: nuxt-terraform
 description: "Scaffold Nuxt + AWS Terraform infrastructure. Use when adding GraphQL resolvers, Lambda functions, initializing a new project with AppSync, DynamoDB, Cognito, writing Terraform tests, or generating/reviewing Terraform code style. Triggers on: add graphql resolver, create lambda, scaffold terraform, init terraform, add appsync resolver, add mutation, add query, add terraform test, write tftest, terraform style."
-model: opus, gpt-5.1-codex-max
+model: opus
 ---
 
 # Nuxt + Terraform Scaffold Skill

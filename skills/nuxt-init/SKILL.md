@@ -1,7 +1,7 @@
 ---
 name: nuxt-init
 description: Use when scaffolding a new Nuxt 4 project with standard config files (prettier, eslint, gitignore, husky, vitest, tsconfig, sops) and bun scripts.
-model: sonnet, gpt-5.3-codex
+model: sonnet
 ---
 
 # Nuxt Init

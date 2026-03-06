@@ -1,7 +1,7 @@
 ---
 name: commit
 description: Use when committing changes, staging files, or finishing work in a git worktree. Covers smart commit, multi-concern splitting, sensitive-file guarding, and worktree merge.
-model: sonnet, gpt-5.3-codex
+model: sonnet
 ---
 
 # Git Commit Skill
