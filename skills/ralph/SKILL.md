@@ -6,34 +6,25 @@ user-invocable: true
 
 # Ralph PRD Converter
 
-Converts existing PRDs to the prd.json format that Ralph uses for autonomous execution.
-
----
+Converts existing PRDs to `prd.json` for Ralph's autonomous execution loop.
 
 ## The Job
 
-Run the Pre-flight Setup (below), then take a PRD (markdown file or text) and convert it to `prd.json` in the project's `scripts/ralph/` directory.
-
----
+Run Pre-flight Setup, then convert a PRD (markdown or text) into `scripts/ralph/prd.json`.
 
 ## Pre-flight Setup
 
-Run these steps before converting the PRD:
-
-1. **Determine project name** — read `package.json` `name` field; fall back to the current directory basename if `package.json` is missing or has no `name`.
-2. **Copy Ralph runtime files** — if `scripts/ralph/ralph.sh`, `scripts/ralph/ralph-tree.sh`, or `scripts/ralph/CLAUDE.md` are missing in the target project, copy them from this skill's `ralph/` subdirectory (relative to this SKILL.md) to `scripts/ralph/` and `chmod +x scripts/ralph/ralph.sh scripts/ralph/ralph-tree.sh`.
-3. **Set NTFY_TOPIC** — in the copied `scripts/ralph/ralph.sh`, replace the `<project-name>` placeholder in the `NTFY_TOPIC` line with the actual project name determined in step 1. Only replace if the placeholder `<project-name>` is still present (do not overwrite a user-customized topic).
-4. **Add ralph-tree script to package.json** — if `package.json` exists and does not have a `ralph-tree` script, add `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"` to the `scripts` section. This allows running `bun run ralph-tree <worktree-name>` from the project root.
-5. **Verify ntfy.sh dependency** — confirm `curl` is available (required — ralph.sh uses `curl` to POST notifications to ntfy.sh). Optionally suggest `brew install ntfy` for receiving notifications on the developer's machine (the CLI is not required for sending).
-6. **Confirm setup** — print a short summary:
-   - `scripts/ralph/ralph.sh` — exists / copied
-   - `scripts/ralph/CLAUDE.md` — exists / copied
-   - `scripts/ralph/ralph-tree.sh` — exists / copied
-   - `scripts/ralph/prd.json` — will be written here
-   - NTFY_TOPIC — `<resolved topic>`
-   - `curl` — available
-
----
+1. **Project name** — read `package.json` `name` field; fall back to directory basename.
+2. **Copy runtime files** — if missing in target project, copy from this skill's `ralph/` subdirectory to `scripts/ralph/`:
+   - `ralph.sh`, `ralph-tree.sh` → `chmod +x`
+   - `CLAUDE.md`
+   - `ralph-audit.ts`
+3. **Set NTFY_TOPIC** — in `scripts/ralph/ralph.sh`, replace `<project-name>` placeholder with actual project name. Skip if already customized.
+4. **Add package.json scripts** — if `package.json` exists, add missing entries:
+   - `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"`
+   - `"ralph-audit": "bun scripts/ralph/ralph-audit.ts"`
+5. **Verify curl** — required by ralph.sh for ntfy.sh notifications.
+6. **Confirm setup** — print summary: file status, NTFY_TOPIC, curl availability.
 
 ## Output Format
 
@@ -41,17 +32,13 @@ Run these steps before converting the PRD:
 {
   "project": "[Project Name]",
   "branchName": "ralph/[feature-name-kebab-case]",
-  "description": "[Feature description from PRD title/intro]",
+  "description": "[Feature description]",
   "userStories": [
     {
       "id": "US-001",
       "title": "[Story title]",
       "description": "As a [user], I want [feature] so that [benefit]",
-      "acceptanceCriteria": [
-        "Criterion 1",
-        "Criterion 2",
-        "Typecheck passes"
-      ],
+      "acceptanceCriteria": ["Criterion 1", "Typecheck passes"],
       "priority": 1,
       "passes": false,
       "notes": ""
@@ -60,219 +47,56 @@ Run these steps before converting the PRD:
 }
 ```
 
----
+## Story Size — The Number One Rule
 
-## Story Size: The Number One Rule
+Each story must be completable in ONE Ralph iteration (one context window). Ralph spawns a fresh instance per iteration with no memory of previous work.
 
-**Each story must be completable in ONE Ralph iteration (one context window).**
+**Right-sized:** add a DB column, add a UI component, update a server action, add a filter.
+**Too big (split):** "build the dashboard", "add auth", "refactor the API".
 
-Ralph spawns a fresh Amp instance per iteration with no memory of previous work. If a story is too big, the LLM runs out of context before finishing and produces broken code.
+Rule of thumb: if you can't describe the change in 2-3 sentences, split it.
 
-### Right-sized stories:
-- Add a database column and migration
-- Add a UI component to an existing page
-- Update a server action with new logic
-- Add a filter dropdown to a list
+## Story Ordering
 
-### Too big (split these):
-- "Build the entire dashboard" - Split into: schema, queries, UI components, filters
-- "Add authentication" - Split into: schema, middleware, login UI, session handling
-- "Refactor the API" - Split into one story per endpoint or pattern
+Dependencies first: schema/migrations → backend logic → UI components → aggregation views.
 
-**Rule of thumb:** If you cannot describe the change in 2-3 sentences, it is too big.
+## Acceptance Criteria
 
----
+Must be verifiable — something Ralph can CHECK.
 
-## Story Ordering: Dependencies First
+**Good:** "Add `status` column with default 'pending'", "Filter has options: All, Active, Done", "Typecheck passes"
+**Bad:** "Works correctly", "Good UX", "Handles edge cases"
 
-Stories execute in priority order. Earlier stories must not depend on later ones.
-
-**Correct order:**
-1. Schema/database changes (migrations)
-2. Server actions / backend logic
-3. UI components that use the backend
-4. Dashboard/summary views that aggregate data
-
-**Wrong order:**
-1. UI component (depends on schema that does not exist yet)
-2. Schema change
-
----
-
-## Acceptance Criteria: Must Be Verifiable
-
-Each criterion must be something Ralph can CHECK, not something vague.
-
-### Good criteria (verifiable):
-- "Add `status` column to tasks table with default 'pending'"
-- "Filter dropdown has options: All, Active, Completed"
-- "Clicking delete shows confirmation dialog"
-- "Typecheck passes"
-- "Tests pass"
-
-### Bad criteria (vague):
-- "Works correctly"
-- "User can do X easily"
-- "Good UX"
-- "Handles edge cases"
-
-### Always include as final criterion:
-```
-"Typecheck passes"
-```
-
-For stories with testable logic, also include:
-```
-"Tests pass"
-```
-
-### For stories that change UI, also include:
-```
-"Verify in browser using dev-browser skill"
-```
-
-Frontend stories are NOT complete until visually verified. Ralph will use the dev-browser skill to navigate to the page, interact with the UI, and confirm changes work.
-
----
+Always include `"Typecheck passes"` as final criterion.
+Add `"Tests pass"` for testable logic.
+Add `"Verify in browser using dev-browser skill"` for UI changes.
 
 ## Conversion Rules
 
-1. **Each user story becomes one JSON entry**
-2. **IDs**: Sequential (US-001, US-002, etc.)
-3. **Priority**: Based on dependency order, then document order
-4. **All stories**: `passes: false` and empty `notes`
-5. **branchName**: Derive from feature name, kebab-case, prefixed with `ralph/`
-6. **Always add**: "Typecheck passes" to every story's acceptance criteria
-
----
+1. Each user story → one JSON entry
+2. IDs: sequential `US-001`, `US-002`, ...
+3. Priority: dependency order, then document order
+4. All stories: `passes: false`, empty `notes`
+5. branchName: kebab-case from feature name, prefixed `ralph/`
+6. Every story gets `"Typecheck passes"` criterion
 
 ## Splitting Large PRDs
 
-If a PRD has big features, split them:
+Break big features into focused, independent stories. Example: "Add notification system" becomes: 1) notifications table, 2) notification service, 3) bell icon, 4) dropdown panel, 5) mark-as-read, 6) preferences page.
 
-**Original:**
-> "Add user notification system"
-
-**Split into:**
-1. US-001: Add notifications table to database
-2. US-002: Create notification service for sending notifications
-3. US-003: Add notification bell icon to header
-4. US-004: Create notification dropdown panel
-5. US-005: Add mark-as-read functionality
-6. US-006: Add notification preferences page
-
-Each is one focused change that can be completed and verified independently.
-
----
-
-## Example
-
-**Input PRD:**
-```markdown
-# Task Status Feature
-
-Add ability to mark tasks with different statuses.
-
-## Requirements
-- Toggle between pending/in-progress/done on task list
-- Filter list by status
-- Show status badge on each task
-- Persist status in database
-```
-
-**Output prd.json:**
-```json
-{
-  "project": "TaskApp",
-  "branchName": "ralph/task-status",
-  "description": "Task Status Feature - Track task progress with status indicators",
-  "userStories": [
-    {
-      "id": "US-001",
-      "title": "Add status field to tasks table",
-      "description": "As a developer, I need to store task status in the database.",
-      "acceptanceCriteria": [
-        "Add status column: 'pending' | 'in_progress' | 'done' (default 'pending')",
-        "Generate and run migration successfully",
-        "Typecheck passes"
-      ],
-      "priority": 1,
-      "passes": false,
-      "notes": ""
-    },
-    {
-      "id": "US-002",
-      "title": "Display status badge on task cards",
-      "description": "As a user, I want to see task status at a glance.",
-      "acceptanceCriteria": [
-        "Each task card shows colored status badge",
-        "Badge colors: gray=pending, blue=in_progress, green=done",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 2,
-      "passes": false,
-      "notes": ""
-    },
-    {
-      "id": "US-003",
-      "title": "Add status toggle to task list rows",
-      "description": "As a user, I want to change task status directly from the list.",
-      "acceptanceCriteria": [
-        "Each row has status dropdown or toggle",
-        "Changing status saves immediately",
-        "UI updates without page refresh",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 3,
-      "passes": false,
-      "notes": ""
-    },
-    {
-      "id": "US-004",
-      "title": "Filter tasks by status",
-      "description": "As a user, I want to filter the list to see only certain statuses.",
-      "acceptanceCriteria": [
-        "Filter dropdown: All | Pending | In Progress | Done",
-        "Filter persists in URL params",
-        "Typecheck passes",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 4,
-      "passes": false,
-      "notes": ""
-    }
-  ]
-}
-```
-
----
+See `references/example.md` for a full input/output conversion example.
 
 ## Archiving Previous Runs
 
-**Before writing a new prd.json, check if there is an existing one from a different feature:**
+Before writing new `prd.json`, check for an existing one with a different `branchName`. If different and `progress.txt` has content beyond the header: archive to `archive/YYYY-MM-DD-feature-name/`, then reset `progress.txt`.
 
-1. Read the current `prd.json` if it exists
-2. Check if `branchName` differs from the new feature's branch name
-3. If different AND `progress.txt` has content beyond the header:
-   - Create archive folder: `archive/YYYY-MM-DD-feature-name/`
-   - Copy current `prd.json` and `progress.txt` to archive
-   - Reset `progress.txt` with fresh header
+## Checklist
 
-**The ralph.sh script handles this automatically** when you run it, but if you are manually updating prd.json between runs, archive first.
-
----
-
-## Checklist Before Saving
-
-Before writing prd.json, verify:
-
-- [ ] **Pre-flight setup complete** (scripts/ralph/ files exist, NTFY_TOPIC set)
-- [ ] **Previous run archived** (if prd.json exists with different branchName, archive it first)
-- [ ] Each story is completable in one iteration (small enough)
-- [ ] Stories are ordered by dependency (schema to backend to UI)
-- [ ] Every story has "Typecheck passes" as criterion
-- [ ] UI stories have "Verify in browser using dev-browser skill" as criterion
-- [ ] Acceptance criteria are verifiable (not vague)
+- [ ] Pre-flight complete (runtime files copied, NTFY_TOPIC set, package.json scripts added)
+- [ ] Previous run archived if needed
+- [ ] Each story fits one iteration
+- [ ] Dependency order respected
+- [ ] Every story has "Typecheck passes"
+- [ ] UI stories have "Verify in browser using dev-browser skill"
+- [ ] Criteria are verifiable, not vague
 - [ ] No story depends on a later story

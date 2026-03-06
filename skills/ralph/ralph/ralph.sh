@@ -7,7 +7,8 @@ set -e
 # Parse arguments
 TOOL="claude"  # Default to claude for this project
 MAX_ITERATIONS=10
-NTFY_TOPIC="${NTFY_TOPIC:-<project-name>}"
+NTFY_TOPIC="${NTFY_TOPIC:-hbm-ralph}"
+NTFY_BASE_URL="${NTFY_BASE_URL:-https://ntfy.sh}"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -82,36 +83,58 @@ fi
 
 notify() {
   local title="$1" message="$2" priority="${3:-default}" tags="${4:-robot}"
+  local branch="unknown"
+  local story_title="unknown"
+  if [ -f "$PRD_FILE" ]; then
+    branch=$(jq -r '.branchName // "unknown"' "$PRD_FILE" 2>/dev/null || echo "unknown")
+    story_title=$(jq -r '[.userStories[] | select(.passes != true)] | first | .title // "unknown"' "$PRD_FILE" 2>/dev/null || echo "unknown")
+  fi
   curl -sf \
     -H "Title: $title" \
     -H "Priority: $priority" \
     -H "Tags: $tags" \
-    -d "$message" \
-    "ntfy.sh/$NTFY_TOPIC" > /dev/null 2>&1 || true
+    -d "$story_title story from $branch branch, $message" \
+    "$NTFY_BASE_URL/$NTFY_TOPIC" > /dev/null 2>&1 || true
 }
 
-maybe_shutdown() {
-  local hour
-  hour=$(date +%H)
-  if (( hour >= 0 && hour < 9 )); then
-    echo "Overnight run complete ($(date +%H:%M)). Shutting down in 1 minute..."
-    notify "Mac Mini Shutting Down" "Ralph finished at $(date +%H:%M), shutting down in 60s" "high" "zzz"
-    if sudo -n shutdown -h +1 2>/dev/null; then
-      echo "Shutdown scheduled via sudo."
-    else
-      osascript -e 'tell application "System Events" to shut down'
-      echo "Shutdown requested via osascript."
-    fi
-  fi
+LOG_FILE="$SCRIPT_DIR/ralph.log"
+
+log() {
+  local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+  echo "$msg"
+  echo "$msg" >> "$LOG_FILE"
 }
 
-echo "Starting Ralph - Tool: $TOOL - Max iterations: $MAX_ITERATIONS"
+# PRD summary
+if [ -f "$PRD_FILE" ]; then
+  PRD_NAME=$(jq -r '.project // .name // "unknown"' "$PRD_FILE" 2>/dev/null)
+  PRD_BRANCH=$(jq -r '.branchName // "unknown"' "$PRD_FILE" 2>/dev/null)
+  TOTAL_STORIES=$(jq '[.userStories[]] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+  DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+  log "PRD: $PRD_NAME"
+  log "Branch: $PRD_BRANCH"
+  log "Stories: $DONE_STORIES/$TOTAL_STORIES complete"
+else
+  log "WARNING: No prd.json found at $PRD_FILE"
+fi
+
+log "Starting Ralph - Tool: $TOOL - Max iterations: $MAX_ITERATIONS"
+log "Log file: $LOG_FILE"
+notify "Ralph Started: ${PRD_NAME:-unknown}" "running with $TOOL for up to $MAX_ITERATIONS iterations, with ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories complete." "default" "rocket"
 
 for i in $(seq 1 $MAX_ITERATIONS); do
   echo ""
   echo "==============================================================="
   echo "  Ralph Iteration $i of $MAX_ITERATIONS ($TOOL)"
   echo "==============================================================="
+
+  # Show which story is next
+  if [ -f "$PRD_FILE" ]; then
+    NEXT_STORY=$(jq -r '[.userStories[] | select(.passes != true)] | first | "\(.id) - \(.title)"' "$PRD_FILE" 2>/dev/null || echo "unknown")
+    log "Next story: $NEXT_STORY"
+  fi
+
+  ITER_START=$(date +%s)
 
   # Run the selected tool with the ralph prompt
   if [[ "$TOOL" == "amp" ]]; then
@@ -121,24 +144,41 @@ for i in $(seq 1 $MAX_ITERATIONS); do
     OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/CLAUDE.md" 2>&1 | tee /dev/stderr) || true
   fi
 
+  ITER_END=$(date +%s)
+  ITER_DURATION=$(( ITER_END - ITER_START ))
+  ITER_MINS=$(( ITER_DURATION / 60 ))
+  ITER_SECS=$(( ITER_DURATION % 60 ))
+
+  # Update story counts
+  if [ -f "$PRD_FILE" ]; then
+    DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+  fi
+
+  EXIT_CODE=$?
+  OUTPUT_LINES=$(echo "$OUTPUT" | wc -l | tr -d ' ')
+  log "Iteration $i finished in ${ITER_MINS}m${ITER_SECS}s (exit: $EXIT_CODE, output: ${OUTPUT_LINES} lines, stories: ${DONE_STORIES:-?}/${TOTAL_STORIES:-?})"
+
   # Check for completion signal
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
     echo ""
-    echo "Ralph completed all tasks!"
-    echo "Completed at iteration $i of $MAX_ITERATIONS"
-    notify "Ralph Complete" "All tasks done at iteration $i/$MAX_ITERATIONS" "high" "white_check_mark"
-    maybe_shutdown
+    log "Ralph completed all tasks!"
+    log "Completed at iteration $i of $MAX_ITERATIONS"
+    notify "Ralph Complete: ${PRD_NAME:-unknown}" "completed all ${TOTAL_STORIES:-?} stories successfully at iteration $i of $MAX_ITERATIONS in ${ITER_MINS}m${ITER_SECS}s." "high" "white_check_mark"
     exit 0
   fi
 
-  echo "Iteration $i complete. Continuing..."
+  # Check if output is suspiciously short (possible error)
+  if [ "$OUTPUT_LINES" -lt 5 ]; then
+    log "WARNING: Very short output ($OUTPUT_LINES lines) - possible error"
+  fi
+
+  notify "Ralph Iteration $i: ${PRD_NAME:-unknown}" "completed in ${ITER_MINS}m${ITER_SECS}s, with ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories complete." "default" "robot"
+  log "Sleeping 2s before next iteration..."
   sleep 2
 done
 
 echo ""
-echo "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
-echo "Check $PROGRESS_FILE for status."
-notify "Ralph Stopped" "Hit max iterations ($MAX_ITERATIONS) without completing" "high" "warning"
-maybe_shutdown
+log "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
+log "Check $PROGRESS_FILE for status."
+notify "Ralph Stopped: ${PRD_NAME:-unknown}" "reached the max iteration limit ($MAX_ITERATIONS) without completing all stories." "high" "warning"
 exit 1
-
