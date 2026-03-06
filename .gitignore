@@ -4,3 +4,8 @@
 .claude/
 .junie/
 skills-lock.json
+node_modules/
+*.lock
+package-lock.json
+profiles/
+tmp/
