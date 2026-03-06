@@ -69,6 +69,7 @@ Must be verifiable — something Ralph can CHECK.
 
 Always include `"Typecheck passes"` as final criterion.
 Add `"Tests pass"` for testable logic.
+Add `"Use nuxt-ui, tailwind-ui, and frontend-design skills"` for UI changes.
 Add `"Verify in browser using dev-browser skill"` for UI changes.
 Add `"Use nuxt-terraform skill"` for stories involving AWS infrastructure or GraphQL (AppSync, DynamoDB, Cognito, Lambda, schema changes).
 
@@ -98,6 +99,7 @@ Before writing new `prd.json`, check for an existing one with a different `branc
 - [ ] Each story fits one iteration
 - [ ] Dependency order respected
 - [ ] Every story has "Typecheck passes"
+- [ ] UI stories have "Use nuxt-ui, tailwind-ui, and frontend-design skills"
 - [ ] UI stories have "Verify in browser using dev-browser skill"
 - [ ] Criteria are verifiable, not vague
 - [ ] No story depends on a later story
