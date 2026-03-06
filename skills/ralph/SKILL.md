@@ -12,7 +12,7 @@ Converts existing PRDs to `prd.json` for Ralph's autonomous execution loop.
 
 Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to create the worktree and configure the environment inside it.
 
-## Pre-flight Setup
+## PRIORITY: Pre-flight Setup
 
 1. **Project name** — read `package.json` `name` field; fall back to directory basename.
 2. **Create worktree & cd into it** (PRIORITY — do this first after determining `branchName`):
