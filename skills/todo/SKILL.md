@@ -41,7 +41,13 @@ Read `tasks/prd-*.md`. Annotate groups with `> PRD exists` — don't duplicate a
 
 Organise findings into logical feature groups. Each group name should be descriptive enough to feed directly into `/prd`.
 
-## Step 4 — Write / Update TODO.md
+## Step 4 — Compute Progress & Write / Update TODO.md
+
+Count total items (`- [ ]` + `- [x]`), completed (`- [x]`), and remaining. Compute `% = done / total * 100`.
+
+**Overall Progress bar**: Render a 40-char bar using `█` for filled and `░` for empty, e.g. `[████░░░░░░]  25.0%  10 / 40`.
+
+**Weekly Snapshot table**: On initial creation, add a baseline row with `Done=0`, `Delta=—`, and today's date. On update, append a new row only if the date differs from the last row — set `Delta` to `+N` (items completed since last row). Never remove previous rows.
 
 Write to project root. On update, preserve all unchecked items and update the timestamp.
 
@@ -49,6 +55,25 @@ Write to project root. On update, preserve all unchecked items and update the ti
 # TODO
 
 > Last updated: YYYY-MM-DD via /todo
+
+---
+
+## Overall Progress
+
+\`\`\`
+[███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  17.0%  28 / 165
+\`\`\`
+
+---
+
+## Weekly Snapshot
+
+| Date       | Done | Delta | Remaining | % Complete | Notes                         |
+| ---------- | ---- | ----- | --------- | ---------- | ----------------------------- |
+| 2026-02-24 | 0    | —     | 165       | 0.0%       | Baseline — TODO files created |
+| 2026-02-25 | 28   | +28   | 137       | 17.0%      | First working week            |
+
+---
 
 ## [Feature Group Name]
 - [ ] Self-contained feature description ready for /prd input (app/components/Foo.vue:12)
