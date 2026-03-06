@@ -4,12 +4,12 @@
     "git-commit": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
-      "computedHash": "23b88fb693e37dbb54390a0998c11bb033d543ac8d8ecbca903f81872b212485"
+      "computedHash": "d7c59d3736295d1d69b8e65b4927a407dbdfe3e2369c7e2a281c4651829ea146"
     },
     "git-squash": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
-      "computedHash": "99e65fd72460232f6a78e2d5bed7604a5d29e4f06019104238649af31d949c8c"
+      "computedHash": "34a61b3f858947e2800430fd1de36ed7f2f0d93d89bf75adceecf6a5d8de34a6"
     },
     "nuxt-init": {
       "source": "ralphcrisostomo/nuxt-development-skills",
@@ -20,6 +20,11 @@
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
       "computedHash": "224e441155ed7fd4a3888feba7c488f315e3a26be73a0cfbdc13ddb8e5975090"
+    },
+    "nuxt-visual-development": {
+      "source": "ralphcrisostomo/nuxt-development-skills",
+      "sourceType": "github",
+      "computedHash": "e708d0fc9f47aaef5c1d30c7aba4968ea5743bc642d6e36f47081448a0328de6"
     },
     "optimise-claude": {
       "source": "ralphcrisostomo/nuxt-development-skills",
@@ -36,15 +41,15 @@
       "sourceType": "github",
       "computedHash": "d90f49447b13bde001a64eec134d79e6e68bf010447d0ee859810e08314c7d5e"
     },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "9b03bb78ec5c81c4e0546dbb78cfc970368c72dcae5482e8c59690175abbc8e7"
+    },
     "tailwind-ui": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
       "computedHash": "cac63e519f0fbab1380fdec5959eabdf8202a3a4b41321ccba7ebe6a9666fd84"
-    },
-    "nuxt-visual-development": {
-      "source": "ralphcrisostomo/nuxt-development-skills",
-      "sourceType": "github",
-      "computedHash": "e708d0fc9f47aaef5c1d30c7aba4968ea5743bc642d6e36f47081448a0328de6"
     }
   }
 }
