@@ -10,10 +10,10 @@ description: Use when squash-merging a feature branch into main for linear histo
 Before merging, validate the environment:
 
 1. **Determine source branch** — use the argument if provided (`/git-squash feature/my-branch`), otherwise use the current branch.
-2. **Verify not on main** — if the source branch is `main`, abort with an error.
-3. **Check for uncommitted changes** — run `git status --porcelain`. If there are uncommitted changes, abort and suggest committing or stashing first.
-4. **Verify branch exists** — confirm the source branch exists locally (`git rev-parse --verify <branch>`).
-5. **Verify divergence from main** — run `git log main..<branch> --oneline`. If empty, abort — nothing to merge.
+2. **Verify not on main** — abort if source branch is `main`.
+3. **Check for uncommitted changes** — `git status --porcelain`. If dirty, abort and suggest committing or stashing.
+4. **Verify branch exists** — `git rev-parse --verify <branch>`.
+5. **Verify divergence** — `git log main..<branch> --oneline`. If empty, abort — nothing to merge.
 
 ## Switch to Main
 
@@ -21,13 +21,7 @@ Before merging, validate the environment:
 git checkout main
 ```
 
-If a remote `origin` exists, pull latest:
-
-```bash
-git pull --ff-only
-```
-
-If `--ff-only` fails, abort — main has diverged and needs manual resolution.
+If remote `origin` exists, pull latest with `git pull --ff-only`. If ff-only fails, abort — main has diverged and needs manual resolution.
 
 ## Squash Merge
 
@@ -35,38 +29,13 @@ If `--ff-only` fails, abort — main has diverged and needs manual resolution.
 git merge --squash <branch>
 ```
 
-If the merge produces conflicts:
-
-1. Abort immediately:
-   ```bash
-   git merge --abort
-   ```
-2. Switch back to the source branch:
-   ```bash
-   git checkout <branch>
-   ```
-3. Suggest the user rebase first:
-   ```
-   Merge conflicts detected. Run `git rebase main` on your branch to resolve conflicts, then retry.
-   ```
-4. Stop — do not proceed.
+On conflicts: `git merge --abort`, switch back to source branch, suggest `git rebase main`, stop.
 
 ## Delegate to git-commit
 
-After a successful squash merge, invoke `/git-commit` to handle the commit. This delegates the full 7-step workflow:
-
-1. Sensitive File Guard
-2. Auto-stage tracked changes
-3. Multi-concern analysis
-4. Commit message generation (Conventional Commits with inferred type/scope)
-5. Heredoc commit with `Co-Authored-By` trailer
-6. Hook failure handling
-
-Do not write commit messages directly — always delegate.
+Invoke `/git-commit` to handle the commit. Do not write commit messages directly.
 
 ## Post-merge Verification
-
-After the commit succeeds:
 
 ```bash
 git log --oneline -5
@@ -74,41 +43,19 @@ git status
 git diff
 ```
 
-Confirm: clean working tree, squash commit visible at HEAD, no leftover staged changes.
+Confirm: clean working tree, squash commit at HEAD, no leftover staged changes.
 
 ## Cleanup
 
-### Delete local branch
-
-First, try safe delete:
+Try safe delete first:
 
 ```bash
 git branch -d <branch>
 ```
 
-If `-d` fails because git doesn't recognise the squash merge (expected — squash merges don't preserve commit ancestry), verify there is zero diff between main and the branch:
+If `-d` fails (expected — squash merges don't preserve ancestry), verify zero diff with `git diff main <branch>`. If empty, force-delete with `git branch -D <branch>`. If there IS a diff, stop — something was lost.
 
-```bash
-git diff main <branch>
-```
-
-If the diff is empty (content fully merged), force-delete is safe:
-
-```bash
-git branch -D <branch>
-```
-
-If there IS a diff, do not delete — something was lost in the squash. Investigate before proceeding.
-
-### Delete remote branch (if exists)
-
-Check if a remote tracking branch exists:
-
-```bash
-git ls-remote --heads origin <branch>
-```
-
-If it exists:
+If a remote tracking branch exists (`git ls-remote --heads origin <branch>`):
 
 ```bash
 git push origin --delete <branch>
@@ -116,20 +63,15 @@ git push origin --delete <branch>
 
 ## Rules
 
-- **Proceed without confirmation** — pre-flight checks are the safety gate. Do not ask the user to approve before merging.
-- Only merge into `main` — never squash-merge into other branches.
+- **Proceed without confirmation** — pre-flight checks are the safety gate.
+- Only merge into `main`.
 - Always use `--squash` — never fast-forward or regular merge.
-- Always delegate the commit to `/git-commit` — never write commit messages directly.
+- Always delegate the commit to `/git-commit`.
 - Abort on merge conflicts — never auto-resolve.
-- Never force-push (`--force`, `--force-with-lease`).
-- Prefer `git branch -d` — use `-D` only after verifying zero diff between main and the branch (squash merges don't preserve ancestry, so `-d` will fail even when content is fully merged).
-- If any step fails, stop and report the error — do not continue the workflow.
+- Never force-push.
+- Prefer `git branch -d` — use `-D` only after verifying zero diff.
+- If any step fails, stop and report the error.
 
 ## Quick Reference
 
-- Pre-flight: verify branch, check uncommitted changes, confirm divergence from main.
-- Switch to main, pull latest with `--ff-only`.
-- `git merge --squash <branch>` — abort on conflicts, suggest rebase.
-- Delegate commit to `/git-commit` (Sensitive File Guard, Conventional Commits, heredoc).
-- Verify: `git log`, `git status`, `git diff`.
-- Cleanup: `git branch -d` (fall back to `-D` after verifying zero diff), `git push origin --delete` (if remote exists).
+Pre-flight → checkout main → `git merge --squash` → `/git-commit` → verify → cleanup (`-d`, fall back to `-D` after zero diff check, delete remote if exists).

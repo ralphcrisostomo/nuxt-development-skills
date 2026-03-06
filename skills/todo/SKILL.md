@@ -6,76 +6,44 @@ user-invocable: true
 
 # TODO Scanner
 
-Scan a codebase for incomplete work and maintain a living `TODO.md` grouped by feature clusters ready for `/prd` input.
+Scan a codebase for incomplete work and maintain a living `TODO.md` grouped by feature clusters ready for `/prd` input. Do NOT implement anything — only inventory and organise.
 
 ---
 
-## The Job
+## Detect Workflow
 
-Detect which workflow to run:
-
-- **TODO.md does not exist** → Initial Creation
-- **TODO.md exists** → Subsequent Update
-
-**Important:** Do NOT implement anything. Only inventory and organise.
+- **TODO.md does not exist** → run Steps 1–4 (Initial Creation)
+- **TODO.md exists** → run Steps 0–4 (Subsequent Update)
 
 ---
 
-## Workflow: Initial Creation
+## Step 0 — Find Completed Work (update only)
 
-### 1. Scan Codebase for Gaps
+Parse `Last updated: YYYY-MM-DD` from existing `TODO.md`. Run `git log --since="<timestamp>" --oneline`, map commits to unchecked items, mark completed with `[x]` and commit hash. Never remove unchecked items.
+
+## Step 1 — Scan Codebase for Gaps
 
 Search for each category and collect findings:
 
-| Category | What to look for |
-| --- | --- |
-| Code comments | `TODO`, `FIXME`, `HACK`, `XXX`, `PLACEHOLDER` |
-| Mock data | Hardcoded arrays, `faker`, `seed`, `mock` in non-test files |
-| Placeholder components | Empty `<div>` bodies, `<!-- TODO -->`, stub templates |
-| Missing pages | Routes referencing nonexistent files |
-| Untested code | Source files with no corresponding test file |
-| Empty/stub files | Files under 5 lines, empty function bodies |
-| Design references | Mockups, wireframes in `docs/`, `designs/`, `assets/` |
+- **Code comments**: `TODO`, `FIXME`, `HACK`, `XXX`, `PLACEHOLDER`
+- **Mock data**: Hardcoded arrays, `faker`, `seed`, `mock` in non-test files
+- **Placeholder components**: Empty `<div>` bodies, `<!-- TODO -->`, stub templates
+- **Missing pages**: Routes referencing nonexistent files
+- **Untested code**: Source files with no corresponding test file
+- **Empty/stub files**: Files under 5 lines, empty function bodies
+- **Design references**: Mockups, wireframes in `docs/`, `designs/`, `assets/`
 
-### 2. Check Existing PRDs
+## Step 2 — Check PRDs
 
-Read `tasks/prd-*.md` files. Any feature already spec'd should be noted, not duplicated.
+Read `tasks/prd-*.md`. Annotate groups with `> PRD exists` — don't duplicate already-spec'd features.
 
-### 3. Group into Feature Clusters
+## Step 3 — Group into Feature Clusters
 
 Organise findings into logical feature groups. Each group name should be descriptive enough to feed directly into `/prd`.
 
-### 4. Write TODO.md
+## Step 4 — Write / Update TODO.md
 
-Write to project root using the format below.
-
----
-
-## Workflow: Subsequent Update
-
-### 1. Read Timestamp
-
-Parse `Last updated: YYYY-MM-DD` from the existing `TODO.md` header.
-
-### 2. Find Completed Work
-
-Run `git log --since="<timestamp>" --oneline` to find new commits. Map commits to existing unchecked items — mark completed with `[x]` and the commit hash.
-
-### 3. Scan for New Gaps
-
-Re-run the same codebase scan from Initial Creation. Add new findings to existing groups or create new groups.
-
-### 4. Re-check PRDs
-
-Read `tasks/prd-*.md` for any newly created PRDs since last update. Add `> PRD exists` annotations.
-
-### 5. Update TODO.md
-
-Update in place. Never remove unchecked items. Update the timestamp.
-
----
-
-## TODO.md Format
+Write to project root. On update, preserve all unchecked items and update the timestamp.
 
 ```markdown
 # TODO
@@ -83,20 +51,13 @@ Update in place. Never remove unchecked items. Update the timestamp.
 > Last updated: YYYY-MM-DD via /todo
 
 ## [Feature Group Name]
-- [ ] Self-contained feature description ready for /prd input
+- [ ] Self-contained feature description ready for /prd input (app/components/Foo.vue:12)
 - [x] Completed item (via commit abc1234)
 
 ## [Another Feature Group]
 > PRD exists: `tasks/prd-feature-name.md`
-- [ ] Sub-task not covered by existing PRD
+- [ ] Sub-task not covered by existing PRD (src/pages/bar.vue:5)
 ```
-
-### Format Rules
-
-- Each `- [ ]` item must be a self-contained feature description suitable as `/prd` input
-- Group names should be clear feature areas, not implementation details
-- Include source location in parentheses: `(app/components/Foo.vue:12)`
-- Completed items keep their `[x]` with the commit hash — never delete them
 
 ---
 
@@ -107,7 +68,8 @@ Update in place. Never remove unchecked items. Update the timestamp.
 3. **No implementation** — only inventory and organise, never write code
 4. **PRD-aware** — check `tasks/prd-*.md` and annotate groups accordingly
 5. **Always timestamp** — update `Last updated` on every run
-6. **Source locations** — include file paths and line numbers for traceability
+6. **Source locations** — include file:line for traceability
+7. **Self-contained items** — each `- [ ]` must work as standalone `/prd` input
 
 ---
 
