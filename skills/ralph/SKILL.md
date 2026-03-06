@@ -23,6 +23,7 @@ Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to c
    - Otherwise: `git worktree add -b <branchName> .claude/worktrees/ralph/<feature-name> main`
    - Skip if worktree already exists
    - `cd .claude/worktrees/ralph/<feature-name>/` — **all subsequent steps operate inside the worktree**
+   - `bun run env:pull` — pull encrypted environment variables into the worktree
 3. **Copy runtime files** — copy from this skill's `ralph/` subdirectory into worktree's `scripts/ralph/`:
    - `ralph.sh`, `ralph-tree.sh` → `chmod +x`
    - `CLAUDE.md`, `ralph-audit.ts`, `prd.json`
