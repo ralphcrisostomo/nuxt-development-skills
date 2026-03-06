@@ -12,10 +12,12 @@ Converts existing PRDs to `prd.json` for Ralph's autonomous execution loop.
 
 Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to create the worktree and configure the environment inside it.
 
+**YOU MUST create a git worktree.** Do NOT skip worktree creation. Do NOT write prd.json to the main working tree. The worktree is where Ralph runs — all files go there.
+
 ## Pre-flight Setup
 
 1. **Project name** — read `package.json` `name` field; fall back to directory basename.
-2. **Create worktree & cd into it** (PRIORITY — do this first after determining `branchName`):
+2. **MANDATORY: Create worktree & cd into it** (do this FIRST after determining `branchName` — do NOT proceed without it):
    - Derive `<feature-name>` by stripping `ralph/` from prd.json `branchName`
    - `mkdir -p .claude/worktrees/ralph`
    - If branch exists locally: `git worktree add .claude/worktrees/ralph/<feature-name> <branchName>`
