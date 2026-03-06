@@ -1,0 +1,23 @@
+{
+  "skill_name": "ralph-verify-acceptance-criteria",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "verify US-001",
+      "expected_output": "A structured verification report for US-001 (Admin middleware and route protection) checking: admin.ts middleware file exists, it checks isAdmin from useAuthState(), non-admin redirect to / with toast, reports.vue has middleware applied, typecheck passes. Should produce a pass/fail table.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "verify US-005",
+      "expected_output": "A structured verification report for US-005 (GraphQL getAdminStats query and resolver) checking: getAdminStats query in schema.graphql, AdminStats type with 6 fields, resolver function files exist in terraform/functions/, admin group check in resolver, adminStats.ts type file exists, admin.ts GraphQL query string exists, terraform modules wired in main.tf, typecheck passes. Should produce a pass/fail table.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "quick verify US-008",
+      "expected_output": "A quick verification (no browser) of US-008 (Users list page) checking: users.vue page exists with admin layout/middleware, table with expected columns, UBadge usage for status, search input with debounce, pagination with nextToken, loading skeletons, selectedUserId ref for detail panel, typecheck passes. Should skip visual verification.",
+      "files": []
+    }
+  ]
+}
