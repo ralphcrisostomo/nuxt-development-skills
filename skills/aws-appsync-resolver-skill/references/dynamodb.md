@@ -240,6 +240,62 @@ export function response(ctx) {
 }
 ```
 
+### Pipeline Counter Pattern (Side-Effect Only)
+
+**WARNING:** `returnValues` is NOT supported in APPSYNC_JS — adding it causes
+`Unsupported element '$[returnValues]'`. After `UpdateItem`, `ctx.result` is an
+empty object with no updated attributes.
+
+In pipeline resolvers, counter update functions should:
+1. Perform the `ADD` as a side effect (DynamoDB IS updated)
+2. Return `ctx.prev.result` or a placeholder response (the updated count is NOT readable)
+3. Use `ctx.stash` flags to skip idempotent operations (prevent double-counting)
+
+```js
+import { util, runtime } from '@aws-appsync/utils'
+
+export function request(ctx) {
+    // Skip if the prior step was idempotent (e.g., item already existed)
+    if (!ctx.stash.itemCreated) {
+        runtime.earlyReturn(ctx.prev.result)
+    }
+
+    return {
+        operation: 'UpdateItem',
+        key: util.dynamodb.toMapValues({ id: ctx.stash.targetId }),
+        update: {
+            expression: 'ADD likeCount :one',
+            expressionValues: util.dynamodb.toMapValues({ ':one': 1 }),
+        },
+        // DO NOT add returnValues — not supported in APPSYNC_JS
+    }
+}
+
+export function response(ctx) {
+    if (ctx.error) {
+        util.error(ctx.error.message, ctx.error.type)
+    }
+    // ctx.result is EMPTY after UpdateItem — return a placeholder.
+    // The frontend should use optimistic counts.
+    return { success: true, likeCount: 0 }
+}
+```
+
+The prior pipeline function sets the stash flag:
+```js
+export function response(ctx) {
+    if (ctx.error) {
+        if (ctx.error.type === 'DynamoDB:ConditionalCheckFailedException') {
+            ctx.stash.itemCreated = false  // Idempotent — skip counter
+            return { success: true }
+        }
+        util.error(ctx.error.message, ctx.error.type)
+    }
+    ctx.stash.itemCreated = true  // New item — increment counter
+    return { success: true }
+}
+```
+
 ## Batch Get Items
 
 Retrieve multiple items by keys using `BatchGetItem`:

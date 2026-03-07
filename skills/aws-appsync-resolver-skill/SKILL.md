@@ -92,6 +92,7 @@ The APPSYNC_JS runtime does NOT support:
 - **`try` / `catch` / `finally`** — use `ctx.error` checks instead
 - **`async` / `await`** — not supported
 - **Classes, generators, symbols, WeakRef, `eval`**
+- **`returnValues` in UpdateItem** — not supported; error: `Unsupported element '$[returnValues]'`. `ctx.result` after `UpdateItem` is empty (no updated attributes). Use optimistic counts on the frontend, or add a follow-up `GetItem` pipeline function to read the updated value
 
 ## Error Handling
 
