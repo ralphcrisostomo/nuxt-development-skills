@@ -19,13 +19,13 @@ Every resolver exports a `request` function and a `response` function:
 
 ```js
 export function request(ctx) {
-  // Build the data source request using ctx.args, ctx.identity, ctx.source, etc.
-  return { /* data source request */ };
+    // Build the data source request using ctx.args, ctx.identity, ctx.source, etc.
+    return { /* data source request */ };
 }
 
 export function response(ctx) {
-  // Transform and return the data source response
-  return ctx.result;
+    // Transform and return the data source response
+    return ctx.result;
 }
 ```
 
@@ -75,6 +75,23 @@ Each data source has a dedicated reference with complete code examples. Read the
 - `references/lambda-eventbridge-none.md` — Lambda invoke, EventBridge PutEvents, local publish, enhanced subscriptions
 - `references/pipeline.md` — Pipeline resolvers (chaining multiple functions)
 
+## APPSYNC_JS Runtime Restrictions
+
+The APPSYNC_JS runtime does NOT support:
+- **`for` / `while` / `do...while` loops** — use `.forEach()`, `.map()`, `.filter()`, `.reduce()` instead
+- **`Array.sort()`** — not available; implement merge logic via `.forEach()` on concatenated arrays
+- **Arrow functions in array method callbacks** — can cause `ReferenceError` for callback parameters. Always use **traditional function expressions**:
+  ```js
+  // WRONG — arrow function parameter may be undefined at runtime
+  items.forEach((item) => { doSomething(item) })
+
+  // CORRECT — traditional function expression
+  items.forEach(function (item) { doSomething(item) })
+  ```
+- **`try` / `catch` / `finally`** — use `ctx.error` checks instead
+- **`async` / `await`** — not supported
+- **Classes, generators, symbols, WeakRef, `eval`**
+
 ## Error Handling
 
 Two patterns depending on severity:
@@ -82,7 +99,7 @@ Two patterns depending on severity:
 ```js
 // Hard error — stops execution and returns error to client
 if (ctx.error) {
-  util.error(ctx.error.message, ctx.error.type);
+    util.error(ctx.error.message, ctx.error.type);
 }
 
 // Soft error — appends error but still returns data
