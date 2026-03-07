@@ -244,6 +244,11 @@ export function response(ctx) {
 
 Retrieve multiple items by keys using `BatchGetItem`:
 
+**WARNING:** `ctx.result.data[TABLE]` from BatchGetItem is NOT a real JS array.
+Calling `.forEach()`, `.reduce()`, `.map()` on it causes `ReferenceError` for callback
+params. Do NOT iterate over the result — stringify it and use `.indexOf()` for lookups,
+or only iterate over `ctx.args` arrays (which work fine).
+
 ```js
 import { util } from '@aws-appsync/utils';
 
@@ -252,18 +257,36 @@ export function request(ctx) {
     operation: 'BatchGetItem',
     tables: {
       Posts: {
-        keys: ctx.args.ids.map((id) => util.dynamodb.toMapValues({ id })),
+        keys: ctx.args.ids.map(function (id) {
+          return util.dynamodb.toMapValues({ id });
+        }),
         consistentRead: true,
       },
     },
   };
 }
 
+// Simple: return the result directly
 export function response(ctx) {
   if (ctx.error) {
     util.error(ctx.error.message, ctx.error.type);
   }
   return ctx.result.data.Posts;
+}
+
+// Lookup pattern: check which requested IDs exist in the result
+// Do NOT iterate over ctx.result.data[TABLE] — iterate over ctx.args instead
+export function response(ctx) {
+  if (ctx.error) {
+    util.error(ctx.error.message, ctx.error.type);
+  }
+  var dataStr = JSON.stringify(ctx.result.data.Posts || []);
+  return ctx.args.ids.map(function (id) {
+    return {
+      id: id,
+      found: dataStr.indexOf(id) > -1,
+    };
+  });
 }
 ```
 
