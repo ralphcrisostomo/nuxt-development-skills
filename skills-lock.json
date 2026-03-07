@@ -4,7 +4,7 @@
     "commit": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
-      "computedHash": "a93bb4ad6152968fa166ee43738d53dd52b120401ca55f7b8f18e252644685eb"
+      "computedHash": "4c85ec1fb0598895d52611fc6c007abcc7ba1b20a07e73a4a3e8f4eb48f174c1"
     },
     "frontend-design": {
       "source": "anthropics/claude-code",
@@ -44,7 +44,7 @@
     "squash": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
-      "computedHash": "c8a06d6d528dbf6db9b97712217393c38a247cc8ada790a5c883c67d114b20a1"
+      "computedHash": "01bd888b540e211889afd6eed30cd9bd6edb519847ae6384fa90607d54cced8f"
     },
     "tailwind-ui": {
       "source": "ralphcrisostomo/nuxt-development-skills",
