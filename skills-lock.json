@@ -21,6 +21,11 @@
       "sourceType": "github",
       "computedHash": "224e441155ed7fd4a3888feba7c488f315e3a26be73a0cfbdc13ddb8e5975090"
     },
+    "nuxt-ui": {
+      "source": "nuxt/ui",
+      "sourceType": "github",
+      "computedHash": "51e570e2bfd4b74752a40ea0a102c9d186bfe3afbb8c34a51cb83e46195243d0"
+    },
     "optimise-claude": {
       "source": "ralphcrisostomo/nuxt-development-skills",
       "sourceType": "github",
