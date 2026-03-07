@@ -1,7 +1,6 @@
 ---
 name: prd
 description: "Generate a Product Requirements Document (PRD) for a new feature. Use when planning a feature, starting a new project, or when asked to create a PRD. Triggers on: create a prd, write prd for, plan this feature, requirements for, spec out."
-model: opus
 user-invocable: true
 ---
 
@@ -84,15 +83,13 @@ Each story should be small enough to implement in one focused session.
 - [ ] Specific verifiable criterion
 - [ ] Another criterion
 - [ ] Typecheck/lint passes
-- [ ] **[UI stories only]** Use nuxt-ui, tailwind-ui, and frontend-design skills
 - [ ] **[UI stories only]** Verify in browser using dev-browser skill
 - [ ] **[AWS/GraphQL stories only]** Use nuxt-terraform skill
 ```
 
 **Important:**
 - Acceptance criteria must be verifiable, not vague. "Works correctly" is bad. "Button shows confirmation dialog before deleting" is good.
-- **For any story with UI changes:** Always include "Use nuxt-ui, tailwind-ui, and frontend-design skills" as acceptance criteria. This ensures components follow Nuxt UI patterns, leverage pre-built Tailwind templates, and adhere to frontend design conventions. Also include "Verify in browser using dev-browser skill" for visual verification.
-- **For any story involving AWS infrastructure or GraphQL** (AppSync, DynamoDB, Cognito, Lambda, schema changes): Always include "Use nuxt-terraform skill" as acceptance criteria. This ensures infrastructure is scaffolded and managed correctly.
+- **For any story with UI changes:** Always include "Verify in browser using dev-browser skill" as acceptance criteria. This ensures visual verification of frontend work.
 
 ### 4. Functional Requirements
 Numbered list of specific functionalities:
