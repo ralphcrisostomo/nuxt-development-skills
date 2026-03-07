@@ -1,0 +1,23 @@
+{
+  "skill_name": "aws-appsync-resolver",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to write an AppSync resolver that creates a new blog post in DynamoDB. The post should have an auto-generated id, a title, content, and authorId from the input, and a createdAt timestamp. It should fail if a post with that id already exists.",
+      "expected_output": "A JS resolver using @aws-appsync/utils/dynamodb with ddb.put(), util.autoId() for the key, util.time.nowISO8601() for createdAt, and a condition checking attributeExists: false",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm building a GraphQL API that needs to query an Aurora PostgreSQL database. I need a resolver that fetches all orders for a customer within a date range, joining with the products table to get product names. The customer_id and date range come from the GraphQL arguments.",
+      "expected_output": "A JS resolver using @aws-appsync/utils/rds with the select() builder, join, where clause with between and typeHint.TIMESTAMP, createPgStatement, and toJsonObject in the response",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I want to set up a real-time notification system with AppSync subscriptions. When a new alert is created, only users in the 'security' or 'ops' group should receive alerts with severity >= 5, and everyone should receive critical alerts (severity >= 9). Write the subscription resolver.",
+      "expected_output": "A JS resolver using NONE data source with extensions.setSubscriptionFilter() and util.transform.toSubscriptionFilter(), combining or/and logic for group-based and severity-based filtering",
+      "files": []
+    }
+  ]
+}
