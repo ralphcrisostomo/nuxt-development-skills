@@ -1,5 +1,6 @@
 ---
 name: vitest-testing
+model: sonnet
 description: >
   Write and run Vitest unit tests for this Nuxt 4 project. Auto-triggers when
   creating or modifying composables, components, services, utils, or Lambda handlers.
