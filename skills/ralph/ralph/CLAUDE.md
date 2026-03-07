@@ -73,6 +73,7 @@ Only update CLAUDE.md if you have **genuinely reusable knowledge** that would he
 ## Quality Requirements
 
 - ALL commits must pass your project's quality checks (typecheck, lint, test)
+- For stories that add or modify testable logic (composables, services, utils, Lambda handlers), write tests using the vitest-testing skill
 - Do NOT commit broken code
 - Keep changes focused and minimal
 - Follow existing code patterns

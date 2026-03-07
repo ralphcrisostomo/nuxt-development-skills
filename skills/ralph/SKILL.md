@@ -92,7 +92,8 @@ Each criterion must be something Ralph can CHECK, not something vague.
 - "Filter dropdown has options: All, Active, Completed"
 - "Clicking delete shows confirmation dialog"
 - "Typecheck passes"
-- "Tests pass"
+- "Tests pass (use vitest-testing skill)"
+- "Write tests using vitest-testing skill"
 
 ### Bad criteria (vague):
 - "Works correctly"
@@ -107,7 +108,7 @@ Each criterion must be something Ralph can CHECK, not something vague.
 
 For stories with testable logic, also include:
 ```
-"Tests pass"
+"Tests pass (use vitest-testing skill)"
 ```
 
 ### For stories that change UI, also include:
@@ -178,7 +179,8 @@ Add ability to mark tasks with different statuses.
       "acceptanceCriteria": [
         "Add status column: 'pending' | 'in_progress' | 'done' (default 'pending')",
         "Generate and run migration successfully",
-        "Typecheck passes"
+        "Typecheck passes",
+        "Tests pass (use vitest-testing skill)"
       ],
       "priority": 1,
       "passes": false,
