@@ -7,6 +7,7 @@ description: >
   resolvers. Trigger this skill when the user mentions AppSync resolvers, GraphQL resolvers on AWS,
   APPSYNC_JS runtime, or asks about connecting GraphQL to AWS data sources — even if they don't
   explicitly say "AppSync".
+model: opus
 ---
 
 # AWS AppSync JavaScript Resolver Skill
