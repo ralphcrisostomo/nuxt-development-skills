@@ -53,6 +53,31 @@ export function request(ctx) {
 }
 ```
 
+## Skipping a Data Source with runtime.earlyReturn()
+
+When a pipeline function needs to conditionally skip its data source call, use `runtime.earlyReturn()`. This is **required** for DynamoDB/HTTP/Lambda data sources — returning `{ payload: ... }` only works with NONE data sources and will cause `Value for field '$[operation]' not found` errors on other data sources.
+
+```js
+import { util, runtime } from '@aws-appsync/utils';
+
+export function request(ctx) {
+  // Skip this function's data source call when not needed
+  if (ctx.stash.targetAuthorId === ctx.identity.sub) {
+    runtime.earlyReturn(ctx.prev.result);
+  }
+
+  return {
+    operation: 'PutItem',
+    key: util.dynamodb.toMapValues({ id: util.autoId() }),
+    attributeValues: util.dynamodb.toMapValues({ createdAt: util.time.nowISO8601() }),
+  };
+}
+
+export function response(ctx) {
+  return ctx.prev.result;
+}
+```
+
 ## Example: Auth Check + Data Fetch Pipeline
 
 **Function 1: Verify authorization**
