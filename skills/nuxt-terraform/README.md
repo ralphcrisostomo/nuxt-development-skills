@@ -113,6 +113,8 @@ Generates a complete AppSync resolver with all supporting code.
 
 **DynamoDB operations (APPSYNC_JS):** GetItem, Query, PutItem, UpdateItem, Scan, BatchDeleteItem
 
+> For advanced resolver patterns (query filters, conditional writes, non-DynamoDB data sources, pipeline resolvers), see the companion [aws-appsync-resolver skill](../aws-appsync-resolver-skill/).
+
 **Generated artifacts:**
 - Schema injection into `schema.graphql`
 - GraphQL constant in `app/graphql/<model>.ts`

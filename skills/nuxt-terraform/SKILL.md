@@ -53,6 +53,8 @@ Ask user for:
 5. **DynamoDB operation** (APPSYNC_JS only) — `GetItem`, `Query`, `PutItem`, `UpdateItem`, `Scan`, `BatchDeleteItem`
 6. **Fields** — model fields as arguments + optional extras (`payload: AWSJSON`, `filter: AWSJSON`, `limit: Int`, `nextToken: String`)
 
+For advanced APPSYNC_JS resolver patterns (filters, conditions, batch operations, non-DynamoDB data sources), use the aws-appsync-resolver skill.
+
 Read [references/resolver-workflow.md](references/resolver-workflow.md) for all generation templates: schema injection, GraphQL constant, Terraform modules (APPSYNC_JS and LAMBDA), dependency modules, AppSync JS functions, Lambda source, and composable generation.
 
 ## Command 3: Lambda Function

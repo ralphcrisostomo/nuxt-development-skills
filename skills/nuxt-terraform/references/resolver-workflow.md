@@ -171,6 +171,8 @@ module "appsync_pipeline_resolver_<name>" {
 
 ## D) AppSync JS Function (APPSYNC_JS only) — `terraform/functions/<name>.js`
 
+> **Tip:** These templates cover standard DynamoDB CRUD. For resolver code with query filters, conditional expressions, non-DynamoDB data sources (HTTP, RDS, OpenSearch, EventBridge, NONE), or pipeline resolvers, consult the aws-appsync-resolver skill — especially `references/dynamodb.md` for high-level `ddb.*` helpers.
+
 Use the DynamoDB operation template:
 
 | Operation | Placeholders | Source |
