@@ -16,7 +16,7 @@
     {
       "id": 3,
       "prompt": "quick verify US-008",
-      "expected_output": "A quick verification (no browser) of US-008 (Users list page) checking: users.vue page exists with admin layout/middleware, table with expected columns, UBadge usage for status, search input with debounce, pagination with nextToken, loading skeletons, selectedUserId ref for detail panel, typecheck passes. Should skip visual verification.",
+      "expected_output": "A quick verification of US-008 (Users list page) checking: users.vue page exists with admin layout/middleware, table with expected columns, UBadge usage for status, search input with debounce, pagination with nextToken, loading skeletons, selectedUserId ref for detail panel, typecheck passes. Browser verification should be marked DEFERRED (not skipped) since US-008 is a UI story — story cannot be marked passes: true until browser verification completes.",
       "files": []
     }
   ]

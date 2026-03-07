@@ -23,31 +23,60 @@ Read `scripts/ralph/prd.json` from the project root. Parse the `userStories` arr
 
 If the user specifies a story ID (e.g., "verify US-005"), target that story. If no story is specified, find the highest-priority story where `passes: true` that hasn't been verified yet, or ask the user which story to verify.
 
-### 2. Classify Each Acceptance Criterion
+### 2. Detect UI Story
 
-For each acceptance criterion in the target story, determine the verification strategy:
+Before classifying individual criteria, determine if this story involves UI. Scan the story title, description, and acceptance criteria for any of these signals:
+
+- **UI keywords:** page, component, layout, modal, form, card, table, badge, button, tab, drawer, sidebar, header, nav, dialog, toast, skeleton, avatar, dropdown, menu, list, grid
+- **File paths:** `.vue` files, `app/pages/`, `app/components/`, `app/layouts/`
+- **Nuxt UI components:** UCard, UButton, UBadge, UTable, USkeleton, UModal, UInput, UForm, UDropdown, UTabs, UAvatar, etc.
+- **Behavioral language:** renders, displays, shows, visible, clicks, navigates, responsive, mobile, dark mode, screenshot
+
+If **any** signal matches, mark the story as a UI story. Browser verification is mandatory for UI stories — it cannot be skipped or deferred.
+
+### 3. Classify Each Acceptance Criterion
+
+For each acceptance criterion, determine the verification strategy:
 
 | Pattern in criterion | Strategy | Tool |
 |---|---|---|
 | "Create file", "Add file" | **File exists** | Glob/Read |
 | "middleware", "composable", "component", "page", "layout" | **File exists + content check** | Read + Grep |
 | "Typecheck passes" | **Typecheck** | `bun run lint` via Bash |
-| "tf:plan", "terraform", "Terraform module" | **Terraform plan** | `/nuxt-terraform` skill knowledge, `bun run tf:plan:staging` |
-| "Verify in browser", "dev-browser" | **Visual verification** | `/dev-browser` skill |
+| "tf:plan", "terraform", "Terraform module" | **Terraform plan** | `bun run tf:plan:staging` |
 | "GraphQL schema", "Add query", "Add mutation", "Add type" | **Schema check** | Grep on `schema.graphql` |
 | "resolver", "function module", "pipeline resolver" | **Terraform config check** | Grep on `main.tf` and `terraform/functions/` |
 | "Wire up", "datasource" | **Terraform wiring** | Grep on `main.tf` |
 | "UCard", "UButton", "UBadge", "USkeleton" etc. | **Component usage** | Grep in target Vue file |
 | General behavior descriptions | **Code review** | Read the relevant file and verify logic |
 
-### 3. Execute Verifications
+Browser verification is not a per-criterion classification — it is driven by the UI story detection in Step 2.
 
-Run checks in this order (fail-fast on critical checks):
+### 4. Execute Verifications
 
-#### A. File Existence Checks
+Run checks in this order. Browser verification runs first because it catches the most impactful issues (broken renders, missing elements, runtime errors) that static checks miss.
+
+#### A. Browser Verification (UI Stories)
+
+Run this phase first for any story detected as UI in Step 2. Use the `/dev-browser` skill:
+
+1. Start the dev server if not running: `bun run dev &`
+2. Start the browser: `./skills/dev-browser/server.sh &`
+3. **Auth setup:**
+   - Regular pages: set `auth-role=user` cookie + `?dev-bypass` query param
+   - Admin pages: use demo account (`.env` → `DEV_DEMO_EMAIL` / `DEV_DEMO_PASSWORD`)
+4. Navigate to the target page
+5. **Verify checklist:**
+   - Page renders without console errors
+   - Expected UI elements are visible (cards, tables, buttons, badges, forms)
+   - Key interactions work (clicks, navigation, form submission)
+   - Responsive layout if criteria mention mobile
+6. Take screenshots as evidence
+
+#### B. File Existence Checks
 For criteria mentioning file creation, use Glob to confirm files exist. Read key files to verify they contain expected patterns (component names, function signatures, imports).
 
-#### B. Code Content Checks
+#### C. Code Content Checks
 For behavioral criteria, Read the relevant source files and verify:
 - Expected functions/methods exist
 - Required imports or composable calls are present
@@ -55,14 +84,14 @@ For behavioral criteria, Read the relevant source files and verify:
 - GraphQL query strings are defined
 - Resolver functions contain expected DynamoDB operations
 
-#### C. GraphQL Schema Checks
+#### D. GraphQL Schema Checks
 For schema-related criteria, Grep `terraform/envs/staging/schema.graphql` for:
 - Type definitions (`type AdminStats`)
 - Query/mutation declarations (`getAdminStats`, `adminDeleteUser`)
 - Field definitions with correct types
 - Input arguments
 
-#### D. Terraform Infrastructure Checks
+#### E. Terraform Infrastructure Checks
 For infrastructure criteria:
 - Grep `terraform/envs/staging/main.tf` for module declarations
 - Grep `terraform/envs/staging/lambda_function.tf` for Lambda resources
@@ -70,29 +99,16 @@ For infrastructure criteria:
 - Check `terraform/lambda/src/` for Lambda handler code
 - If the user wants a full terraform validation, run `bun run tf:plan:staging` (requires AWS credentials)
 
-#### E. TypeScript / Lint Check
+#### F. TypeScript / Lint Check
 For "Typecheck passes" criteria, run:
 ```bash
 bun run lint 2>&1 | tail -20
 ```
 Check exit code. If it fails, capture and report the errors.
 
-#### F. Visual Verification (UI Stories)
-For criteria mentioning "Verify in browser" or visual elements, use the `/dev-browser` skill:
+### 5. Generate Verification Report
 
-1. Start the dev server if not running: `bun run dev &`
-2. Start the browser: `./skills/dev-browser/server.sh &`
-3. Navigate to the relevant admin page
-4. For admin pages, use demo account auth (credentials in `.env` as `DEV_DEMO_EMAIL` / `DEV_DEMO_PASSWORD`) since dev-bypass doesn't support admin role
-5. Take screenshots and verify:
-   - Page renders without errors
-   - Expected UI elements are visible (cards, tables, buttons, badges)
-   - Responsive layout works (check mobile viewport too if criterion mentions it)
-   - Dark mode if mentioned
-
-### 4. Generate Verification Report
-
-Output a structured report for each criterion:
+Output a structured report. Browser verification appears first to reflect execution priority:
 
 ```
 ## Verification Report: US-XXX — [Story Title]
@@ -101,10 +117,10 @@ Output a structured report for each criterion:
 
 | # | Criterion | Status | Evidence |
 |---|-----------|--------|----------|
-| 1 | Create middleware file | PASS | File exists at `app/middleware/admin.ts` |
-| 2 | Non-admin redirect | PASS | Line 8: `navigateTo('/')` with toast |
-| 3 | Typecheck passes | PASS | `bun run lint` exit code 0 |
-| 4 | Verify in browser | PASS | Screenshot: admin page renders correctly |
+| 1 | Browser verification | PASS | Screenshot: page renders, elements visible |
+| 2 | Create middleware file | PASS | File exists at `app/middleware/admin.ts` |
+| 3 | Non-admin redirect | PASS | Line 8: `navigateTo('/')` with toast |
+| 4 | Typecheck passes | PASS | `bun run lint` exit code 0 |
 
 ### Summary
 - **Passed:** 4/4
@@ -114,13 +130,9 @@ Output a structured report for each criterion:
 
 For failed criteria, include specific details about what's missing or incorrect, with file paths and line numbers.
 
-### 5. Update PRD (Optional)
+### 6. Update PRD (Optional)
 
-If all criteria pass and the user confirms, update `scripts/ralph/prd.json`:
-- Set `"passes": true` for the verified story
-- Add `"verifiedAt": "<ISO timestamp>"` to the story object
-
-If any criteria fail, do NOT update the PRD. Instead, list the remediation steps needed.
+If all criteria pass and the user confirms, update `scripts/ralph/prd.json`: set `"passes": true` and add `"verifiedAt": "<ISO timestamp>"`. If any criteria fail, do NOT update — list remediation steps instead.
 
 ## Batch Verification Mode
 
@@ -132,42 +144,29 @@ When asked to "verify all stories" or "audit the PRD":
 4. Output a summary table:
 
 ```
-## PRD Verification Summary
-
 | Story | Title | Claimed | Verified | Issues |
 |-------|-------|---------|----------|--------|
 | US-001 | Admin middleware | PASS | PASS | - |
-| US-002 | Cognito group | PASS | PASS | - |
 | US-003 | Admin layout | PASS | FAIL | Missing mobile drawer test |
 ```
 
 ## Quick Check Mode
 
-For fast verification without visual checks, skip the browser verification steps and focus on:
-- File existence
-- Code pattern matching
-- Schema/terraform config checks
-- Typecheck
-
-This is useful when the dev server isn't running or for rapid iteration. Use this mode when the user says "quick verify" or "verify without browser".
+When the user says "quick verify" or "verify without browser", static checks (file existence, code patterns, schema, terraform, typecheck) run immediately. For UI stories, browser verification is marked as **DEFERRED** in the report — the story cannot be marked `passes: true` until browser verification completes. Run deferred browser checks later with "verify browser US-XXX".
 
 ## Key Project Paths
 
-These are the primary locations to check during verification:
-
 | Area | Path |
 |---|---|
-| Pages | `app/pages/admin/` |
-| Components | `app/components/admin/` |
+| Pages | `app/pages/` |
+| Components | `app/components/` |
 | Middleware | `app/middleware/` |
 | Composables | `app/composables/` |
 | Layouts | `app/layouts/` |
-| GraphQL queries | `app/graphql/admin.ts` |
+| GraphQL queries | `app/graphql/` |
 | Schema | `terraform/envs/staging/schema.graphql` |
 | Resolver functions | `terraform/functions/` |
 | Lambda handlers | `terraform/lambda/src/` |
 | Terraform config | `terraform/envs/staging/main.tf` |
 | Lambda TF config | `terraform/envs/staging/lambda_function.tf` |
-| Types | `types/` |
-| PRD | `scripts/ralph/prd.json` |
-| Progress log | `scripts/ralph/progress.txt` |
+| Types / PRD | `types/`, `scripts/ralph/prd.json` |
