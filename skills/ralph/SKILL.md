@@ -7,35 +7,17 @@ user-invocable: true
 
 # Ralph PRD Converter
 
-Converts existing PRDs to `prd.json` for Ralph's autonomous execution loop.
+Converts existing PRDs to prd.json and sets up an isolated git worktree for autonomous execution.
+
+---
 
 ## The Job
 
-Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to create the worktree and configure the environment inside it.
+1. Take a PRD (markdown file or text) and convert it to prd.json
+2. Create a git worktree for Ralph to work in
+3. Save prd.json and initialize progress tracking in the worktree
 
-## PRIORITY: Pre-flight Setup
-
-1. **Project name** — read `package.json` `name` field; fall back to directory basename.
-2. **Create worktree & cd into it** (PRIORITY — do this first after determining `branchName`):
-   - Derive `<feature-name>` by stripping `ralph/` from prd.json `branchName`
-   - `mkdir -p .claude/worktrees/ralph`
-   - If branch exists locally: `git worktree add .claude/worktrees/ralph/<feature-name> <branchName>`
-   - Otherwise: `git worktree add -b <branchName> .claude/worktrees/ralph/<feature-name> main`
-   - Skip if worktree already exists
-   - `cd .claude/worktrees/ralph/<feature-name>/` — **all subsequent steps operate inside the worktree**
-   - `bun run env:pull` — pull encrypted environment variables into the worktree
-3. **Copy runtime files** — copy from this skill's `ralph/` subdirectory into worktree's `scripts/ralph/`:
-   - `ralph.sh`, `ralph-tree.sh` → `chmod +x`
-   - `CLAUDE.md`, `ralph-audit.ts`, `prd.json`
-   - Copy `progress.txt` if it exists in source project
-4. **Set NTFY_TOPIC** — in worktree's `scripts/ralph/ralph.sh`, replace `<project-name>` placeholder with actual project name. Skip if already customized.
-5. **Add package.json scripts** — if worktree's `package.json` exists, add missing entries:
-   - `"ralph-tree": "bash scripts/ralph/ralph-tree.sh"`
-   - `"ralph-audit": "bun scripts/ralph/ralph-audit.ts"`
-6. **Verify curl** — required by ralph.sh for ntfy.sh notifications.
-7. **Confirm setup & commit** — print summary: file status, NTFY_TOPIC, worktree path, curl availability.
-   - `git add scripts/ralph/{prd.json,CLAUDE.md,progress.txt}` then `git commit -m "chore(ralph): add PRD for <feature-name>"`
-   - Print launch command: `bun run ralph-tree ralph/<feature-name>`
+---
 
 ## Output Format
 
@@ -43,13 +25,17 @@ Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to c
 {
   "project": "[Project Name]",
   "branchName": "ralph/[feature-name-kebab-case]",
-  "description": "[Feature description]",
+  "description": "[Feature description from PRD title/intro]",
   "userStories": [
     {
       "id": "US-001",
       "title": "[Story title]",
       "description": "As a [user], I want [feature] so that [benefit]",
-      "acceptanceCriteria": ["Criterion 1", "Typecheck passes"],
+      "acceptanceCriteria": [
+        "Criterion 1",
+        "Criterion 2",
+        "Typecheck passes"
+      ],
       "priority": 1,
       "passes": false,
       "notes": ""
@@ -58,60 +44,258 @@ Convert a PRD (markdown or text) into `prd.json`, then run Pre-flight Setup to c
 }
 ```
 
-## Story Size — The Number One Rule
+---
 
-Each story must be completable in ONE Ralph iteration (one context window). Ralph spawns a fresh instance per iteration with no memory of previous work.
+## Story Size: The Number One Rule
 
-**Right-sized:** add a DB column, add a UI component, update a server action, add a filter.
-**Too big (split):** "build the dashboard", "add auth", "refactor the API".
+**Each story must be completable in ONE Ralph iteration (one context window).**
 
-Rule of thumb: if you can't describe the change in 2-3 sentences, split it.
+Ralph spawns a fresh Amp instance per iteration with no memory of previous work. If a story is too big, the LLM runs out of context before finishing and produces broken code.
 
-## Story Ordering
+### Right-sized stories:
+- Add a database column and migration
+- Add a UI component to an existing page
+- Update a server action with new logic
+- Add a filter dropdown to a list
 
-Dependencies first: schema/migrations → backend logic → UI components → aggregation views.
+### Too big (split these):
+- "Build the entire dashboard" - Split into: schema, queries, UI components, filters
+- "Add authentication" - Split into: schema, middleware, login UI, session handling
+- "Refactor the API" - Split into one story per endpoint or pattern
 
-## Acceptance Criteria
+**Rule of thumb:** If you cannot describe the change in 2-3 sentences, it is too big.
 
-Must be verifiable — something Ralph can CHECK.
+---
 
-**Good:** "Add `status` column with default 'pending'", "Filter has options: All, Active, Done", "Typecheck passes"
-**Bad:** "Works correctly", "Good UX", "Handles edge cases"
+## Story Ordering: Dependencies First
 
-Always include `"Typecheck passes"` as final criterion.
-Add `"Tests pass"` for testable logic.
-Add `"Use nuxt-ui, tailwind-ui, and frontend-design skills"` for UI changes.
-Add `"Verify in browser using dev-browser skill"` for UI changes.
-Add `"Use nuxt-terraform skill"` for stories involving AWS infrastructure or GraphQL (AppSync, DynamoDB, Cognito, Lambda, schema changes).
+Stories execute in priority order. Earlier stories must not depend on later ones.
+
+**Correct order:**
+1. Schema/database changes (migrations)
+2. Server actions / backend logic
+3. UI components that use the backend
+4. Dashboard/summary views that aggregate data
+
+**Wrong order:**
+1. UI component (depends on schema that does not exist yet)
+2. Schema change
+
+---
+
+## Acceptance Criteria: Must Be Verifiable
+
+Each criterion must be something Ralph can CHECK, not something vague.
+
+### Good criteria (verifiable):
+- "Add `status` column to tasks table with default 'pending'"
+- "Filter dropdown has options: All, Active, Completed"
+- "Clicking delete shows confirmation dialog"
+- "Typecheck passes"
+- "Tests pass"
+
+### Bad criteria (vague):
+- "Works correctly"
+- "User can do X easily"
+- "Good UX"
+- "Handles edge cases"
+
+### Always include as final criterion:
+```
+"Typecheck passes"
+```
+
+For stories with testable logic, also include:
+```
+"Tests pass"
+```
+
+### For stories that change UI, also include:
+```
+"Verify in browser using dev-browser skill"
+```
+
+Frontend stories are NOT complete until visually verified. Ralph will use the dev-browser skill to navigate to the page, interact with the UI, and confirm changes work.
+
+---
 
 ## Conversion Rules
 
-1. Each user story → one JSON entry
-2. IDs: sequential `US-001`, `US-002`, ...
-3. Priority: dependency order, then document order
-4. All stories: `passes: false`, empty `notes`
-5. branchName: kebab-case from feature name, prefixed `ralph/`
-6. Every story gets `"Typecheck passes"` criterion
+1. **Each user story becomes one JSON entry**
+2. **IDs**: Sequential (US-001, US-002, etc.)
+3. **Priority**: Based on dependency order, then document order
+4. **All stories**: `passes: false` and empty `notes`
+5. **branchName**: Derive from feature name, kebab-case, prefixed with `ralph/`
+6. **Always add**: "Typecheck passes" to every story's acceptance criteria
+
+---
 
 ## Splitting Large PRDs
 
-Break big features into focused, independent stories. Example: "Add notification system" becomes: 1) notifications table, 2) notification service, 3) bell icon, 4) dropdown panel, 5) mark-as-read, 6) preferences page.
+If a PRD has big features, split them:
 
-See `references/example.md` for a full input/output conversion example.
+**Original:**
+> "Add user notification system"
 
-## Archiving Previous Runs
+**Split into:**
+1. US-001: Add notifications table to database
+2. US-002: Create notification service for sending notifications
+3. US-003: Add notification bell icon to header
+4. US-004: Create notification dropdown panel
+5. US-005: Add mark-as-read functionality
+6. US-006: Add notification preferences page
 
-Before writing new `prd.json`, check for an existing one with a different `branchName`. If different and `progress.txt` has content beyond the header: archive to `archive/YYYY-MM-DD-feature-name/` in the source project, copy the archive directory into the worktree's `archive/` as well, then reset `progress.txt`.
+Each is one focused change that can be completed and verified independently.
 
-## Checklist
+---
 
-- [ ] Worktree created at `.claude/worktrees/ralph/<feature-name>/`
-- [ ] Pre-flight complete (runtime files copied, NTFY_TOPIC set, package.json scripts added)
-- [ ] Previous run archived if needed
-- [ ] Each story fits one iteration
-- [ ] Dependency order respected
-- [ ] Every story has "Typecheck passes"
-- [ ] UI stories have "Use nuxt-ui, tailwind-ui, and frontend-design skills"
-- [ ] UI stories have "Verify in browser using dev-browser skill"
-- [ ] Criteria are verifiable, not vague
+## Example
+
+**Input PRD:**
+```markdown
+# Task Status Feature
+
+Add ability to mark tasks with different statuses.
+
+## Requirements
+- Toggle between pending/in-progress/done on task list
+- Filter list by status
+- Show status badge on each task
+- Persist status in database
+```
+
+**Output prd.json:**
+```json
+{
+  "project": "TaskApp",
+  "branchName": "ralph/task-status",
+  "description": "Task Status Feature - Track task progress with status indicators",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add status field to tasks table",
+      "description": "As a developer, I need to store task status in the database.",
+      "acceptanceCriteria": [
+        "Add status column: 'pending' | 'in_progress' | 'done' (default 'pending')",
+        "Generate and run migration successfully",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Display status badge on task cards",
+      "description": "As a user, I want to see task status at a glance.",
+      "acceptanceCriteria": [
+        "Each task card shows colored status badge",
+        "Badge colors: gray=pending, blue=in_progress, green=done",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add status toggle to task list rows",
+      "description": "As a user, I want to change task status directly from the list.",
+      "acceptanceCriteria": [
+        "Each row has status dropdown or toggle",
+        "Changing status saves immediately",
+        "UI updates without page refresh",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Filter tasks by status",
+      "description": "As a user, I want to filter the list to see only certain statuses.",
+      "acceptanceCriteria": [
+        "Filter dropdown: All | Pending | In Progress | Done",
+        "Filter persists in URL params",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
+```
+
+---
+
+## Worktree Setup
+
+After generating prd.json, create an isolated git worktree for Ralph to work in.
+
+### 1. Create the worktree
+
+```bash
+# From the repo root — create worktree with a new branch from main
+git worktree add .claude/worktrees/ralph/<feature-name> -b ralph/<feature-name> main
+```
+
+Where `<feature-name>` is the kebab-case feature name (the part after `ralph/` in `branchName`).
+
+### 2. Install dependencies and pull env
+
+```bash
+cd .claude/worktrees/ralph/<feature-name>
+bun install
+bun run env:pull
+```
+
+### 3. Save files into the worktree
+
+Save prd.json to the worktree's ralph directory:
+```
+.claude/worktrees/ralph/<feature-name>/scripts/ralph/prd.json
+```
+
+Initialize progress.txt in the worktree:
+```
+.claude/worktrees/ralph/<feature-name>/scripts/ralph/progress.txt
+```
+
+With content:
+```
+# Ralph Progress Log
+Started: <current date>
+---
+```
+
+### 4. Tell the user how to run Ralph
+
+```bash
+# From the main repo root
+scripts/ralph/ralph-tree.sh ralph/<feature-name>
+
+# With options
+scripts/ralph/ralph-tree.sh ralph/<feature-name> --tool claude 15
+```
+
+---
+
+## Checklist Before Saving
+
+Before writing prd.json, verify:
+
+- [ ] Each story is completable in one iteration (small enough)
+- [ ] Stories are ordered by dependency (schema to backend to UI)
+- [ ] Every story has "Typecheck passes" as criterion
+- [ ] UI stories have "Verify in browser using dev-browser skill" as criterion
+- [ ] Acceptance criteria are verifiable (not vague)
 - [ ] No story depends on a later story
+- [ ] Worktree created at `.claude/worktrees/ralph/<feature-name>/`
+- [ ] `bun install` and `bun run env:pull` run in worktree
+- [ ] prd.json saved into the worktree's `scripts/ralph/`
+- [ ] progress.txt initialized in the worktree

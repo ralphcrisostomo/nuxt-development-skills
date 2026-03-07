@@ -6,7 +6,7 @@ You are an autonomous coding agent working on a software project.
 
 1. Read the PRD at `prd.json` (in the same directory as this file)
 2. Read the progress log at `progress.txt` (check Codebase Patterns section first)
-3. Verify you're on the correct branch from PRD `branchName` (the worktree is pre-configured by the ralph skill pre-flight).
+3. Verify you're in the correct worktree — your current branch should match the PRD `branchName`. Do NOT switch branches or create new ones; you are running inside a dedicated git worktree.
 4. Pick the **highest priority** user story where `passes: false`
 5. Implement that single user story
 6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
@@ -18,7 +18,6 @@ You are an autonomous coding agent working on a software project.
 ## Progress Report Format
 
 APPEND to progress.txt (never replace, always append):
-
 ```
 ## [Date/Time] - [Story ID]
 - What was implemented
@@ -52,21 +51,19 @@ Before committing, check if any edited files have learnings worth preserving in 
 1. **Identify directories with edited files** - Look at which directories you modified
 2. **Check for existing CLAUDE.md** - Look for CLAUDE.md in those directories or parent directories
 3. **Add valuable learnings** - If you discovered something future developers/agents should know:
-    - API patterns or conventions specific to that module
-    - Gotchas or non-obvious requirements
-    - Dependencies between files
-    - Testing approaches for that area
-    - Configuration or environment requirements
+   - API patterns or conventions specific to that module
+   - Gotchas or non-obvious requirements
+   - Dependencies between files
+   - Testing approaches for that area
+   - Configuration or environment requirements
 
 **Examples of good CLAUDE.md additions:**
-
 - "When modifying X, also update Y to keep them in sync"
 - "This module uses pattern Z for all API calls"
 - "Tests require the dev server running on PORT 3000"
 - "Field names must match the template exactly"
 
 **Do NOT add:**
-
 - Story-specific implementation details
 - Temporary debugging notes
 - Information already in progress.txt

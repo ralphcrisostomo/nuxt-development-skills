@@ -5,7 +5,7 @@
 set -e
 
 # Parse arguments
-TOOL="claude"  # Default to claude for this project
+TOOL="claude"  # Default to amp for backwards compatibility
 MAX_ITERATIONS=10
 NTFY_TOPIC="${NTFY_TOPIC:-hbm-ralph}"
 NTFY_BASE_URL="${NTFY_BASE_URL:-https://ntfy.sh}"
@@ -81,6 +81,13 @@ if [ ! -f "$PROGRESS_FILE" ]; then
   echo "---" >> "$PROGRESS_FILE"
 fi
 
+# PRD metadata for notifications
+if [ -f "$PRD_FILE" ]; then
+  PRD_NAME=$(jq -r '.project // .name // "unknown"' "$PRD_FILE" 2>/dev/null)
+  TOTAL_STORIES=$(jq '[.userStories[]] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+  DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
+fi
+
 notify() {
   local title="$1" message="$2" priority="${3:-default}" tags="${4:-robot}"
   local branch="unknown"
@@ -97,37 +104,7 @@ notify() {
     "$NTFY_BASE_URL/$NTFY_TOPIC" > /dev/null 2>&1 || true
 }
 
-LOG_FILE="$SCRIPT_DIR/ralph.log"
-
-log() {
-  local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $1"
-  echo "$msg"
-  echo "$msg" >> "$LOG_FILE"
-}
-
-# PRD summary
-if [ -f "$PRD_FILE" ]; then
-  PRD_NAME=$(jq -r '.project // .name // "unknown"' "$PRD_FILE" 2>/dev/null)
-  PRD_BRANCH=$(jq -r '.branchName // "unknown"' "$PRD_FILE" 2>/dev/null)
-  TOTAL_STORIES=$(jq '[.userStories[]] | length' "$PRD_FILE" 2>/dev/null || echo "?")
-  DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
-  log "PRD: $PRD_NAME"
-  log "Branch: $PRD_BRANCH"
-  log "Stories: $DONE_STORIES/$TOTAL_STORIES complete"
-else
-  log "WARNING: No prd.json found at $PRD_FILE"
-fi
-
-REPO_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || pwd)
-WORK_DIR="$REPO_ROOT"
-WORK_RALPH="$SCRIPT_DIR"
-
-CUMULATIVE_INPUT_TOKENS=0
-CUMULATIVE_OUTPUT_TOKENS=0
-CUMULATIVE_COST=0
-
-log "Starting Ralph - Tool: $TOOL - Max iterations: $MAX_ITERATIONS"
-log "Log file: $LOG_FILE"
+echo "Starting Ralph - Tool: $TOOL - Max iterations: $MAX_ITERATIONS"
 notify "Ralph Started: ${PRD_NAME:-unknown}" "running with $TOOL for up to $MAX_ITERATIONS iterations, with ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories complete." "default" "rocket"
 
 for i in $(seq 1 $MAX_ITERATIONS); do
@@ -136,74 +113,35 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "  Ralph Iteration $i of $MAX_ITERATIONS ($TOOL)"
   echo "==============================================================="
 
-  # Show which story is next
-  if [ -f "$PRD_FILE" ]; then
-    NEXT_STORY=$(jq -r '[.userStories[] | select(.passes != true)] | first | "\(.id) - \(.title)"' "$PRD_FILE" 2>/dev/null || echo "unknown")
-    log "Next story: $NEXT_STORY"
-  fi
-
-  ITER_START=$(date +%s)
-
-  # Run the selected tool from the working directory
-  INPUT_TOKENS="?"
-  OUTPUT_TOKENS="?"
-  COST_USD="?"
+  # Run the selected tool with the ralph prompt
   if [[ "$TOOL" == "amp" ]]; then
-    OUTPUT=$(cd "$WORK_DIR" && cat "$WORK_RALPH/prompt.md" | amp --dangerously-allow-all 2>&1 | tee /dev/stderr) || true
+    OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | amp --dangerously-allow-all 2>&1 | tee /dev/stderr) || true
   else
-    # Use JSON output to capture token usage; stderr streams to terminal
-    RAW_OUTPUT=$(cd "$WORK_DIR" && claude --dangerously-skip-permissions --print --output-format json < "$WORK_RALPH/CLAUDE.md" 2>/dev/stderr) || true
-    INPUT_TOKENS=$(echo "$RAW_OUTPUT" | jq -r '.input_tokens // 0' 2>/dev/null || echo "?")
-    OUTPUT_TOKENS=$(echo "$RAW_OUTPUT" | jq -r '.output_tokens // 0' 2>/dev/null || echo "?")
-    COST_USD=$(echo "$RAW_OUTPUT" | jq -r '.cost_usd // "?"' 2>/dev/null || echo "?")
-    OUTPUT=$(echo "$RAW_OUTPUT" | jq -r '.result // empty' 2>/dev/null || echo "$RAW_OUTPUT")
+    # Claude Code: use --dangerously-skip-permissions for autonomous operation, --print for output
+    OUTPUT=$(claude --dangerously-skip-permissions --print < "$SCRIPT_DIR/CLAUDE.md" 2>&1 | tee /dev/stderr) || true
   fi
-  TOTAL_TOKENS=$(( ${INPUT_TOKENS:-0} + ${OUTPUT_TOKENS:-0} )) 2>/dev/null || TOTAL_TOKENS="?"
-  TOKEN_INFO="${INPUT_TOKENS}in/${OUTPUT_TOKENS}out (\$${COST_USD})"
-  # Accumulate totals
-  CUMULATIVE_INPUT_TOKENS=$(( CUMULATIVE_INPUT_TOKENS + ${INPUT_TOKENS:-0} )) 2>/dev/null || true
-  CUMULATIVE_OUTPUT_TOKENS=$(( CUMULATIVE_OUTPUT_TOKENS + ${OUTPUT_TOKENS:-0} )) 2>/dev/null || true
-  CUMULATIVE_COST=$(echo "$CUMULATIVE_COST + ${COST_USD:-0}" | bc 2>/dev/null || echo "$CUMULATIVE_COST")
-
-  ITER_END=$(date +%s)
-  ITER_DURATION=$(( ITER_END - ITER_START ))
-  ITER_MINS=$(( ITER_DURATION / 60 ))
-  ITER_SECS=$(( ITER_DURATION % 60 ))
-
-  # Update story counts
-  if [ -f "$PRD_FILE" ]; then
-    DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
-  fi
-
-  EXIT_CODE=$?
-  OUTPUT_LINES=$(echo "$OUTPUT" | wc -l | tr -d ' ')
-  log "Iteration $i finished in ${ITER_MINS}m${ITER_SECS}s (exit: $EXIT_CODE, output: ${OUTPUT_LINES} lines, tokens: $TOKEN_INFO, stories: ${DONE_STORIES:-?}/${TOTAL_STORIES:-?})"
 
   # Check for completion signal
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
     echo ""
-    log "Ralph completed all tasks!"
-    log "Completed at iteration $i of $MAX_ITERATIONS"
-    CUMULATIVE_INFO="${CUMULATIVE_INPUT_TOKENS}in/${CUMULATIVE_OUTPUT_TOKENS}out (\$${CUMULATIVE_COST})"
-    log "Total tokens: $CUMULATIVE_INFO"
-    notify "Ralph Complete: ${PRD_NAME:-unknown}" "completed all ${TOTAL_STORIES:-?} stories at iteration $i/$MAX_ITERATIONS in ${ITER_MINS}m${ITER_SECS}s. Total tokens: $CUMULATIVE_INFO" "high" "white_check_mark"
+    echo "Ralph completed all tasks!"
+    echo "Completed at iteration $i of $MAX_ITERATIONS"
+    notify "Ralph Complete: ${PRD_NAME:-unknown}" "completed all ${TOTAL_STORIES:-?} stories at iteration $i/$MAX_ITERATIONS." "high" "white_check_mark"
     exit 0
   fi
 
-  # Check if output is suspiciously short (possible error)
-  if [ "$OUTPUT_LINES" -lt 5 ]; then
-    log "WARNING: Very short output ($OUTPUT_LINES lines) - possible error"
+  # Refresh story counts for notification
+  if [ -f "$PRD_FILE" ]; then
+    DONE_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE" 2>/dev/null || echo "?")
   fi
 
-  notify "Ralph Iteration $i: ${PRD_NAME:-unknown}" "completed in ${ITER_MINS}m${ITER_SECS}s, ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories. Tokens: $TOKEN_INFO" "default" "robot"
-  log "Sleeping 2s before next iteration..."
+  echo "Iteration $i complete. Continuing..."
+  notify "Ralph Iteration $i: ${PRD_NAME:-unknown}" "iteration complete, ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories done." "default" "robot"
   sleep 2
 done
 
 echo ""
-CUMULATIVE_INFO="${CUMULATIVE_INPUT_TOKENS}in/${CUMULATIVE_OUTPUT_TOKENS}out (\$${CUMULATIVE_COST})"
-log "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
-log "Total tokens: $CUMULATIVE_INFO"
-log "Check $PROGRESS_FILE for status."
-notify "Ralph Stopped: ${PRD_NAME:-unknown}" "reached max iterations ($MAX_ITERATIONS). Total tokens: $CUMULATIVE_INFO" "high" "warning"
+echo "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
+echo "Check $PROGRESS_FILE for status."
+notify "Ralph Stopped: ${PRD_NAME:-unknown}" "reached max iterations ($MAX_ITERATIONS), ${DONE_STORIES:-?}/${TOTAL_STORIES:-?} stories done." "high" "warning"
 exit 1
