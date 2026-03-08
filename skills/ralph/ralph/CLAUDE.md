@@ -18,6 +18,7 @@ You are an autonomous coding agent working on a software project.
 ## Progress Report Format
 
 APPEND to progress.txt (never replace, always append):
+
 ```
 ## [Date/Time] - [Story ID]
 - What was implemented
@@ -51,19 +52,21 @@ Before committing, check if any edited files have learnings worth preserving in 
 1. **Identify directories with edited files** - Look at which directories you modified
 2. **Check for existing CLAUDE.md** - Look for CLAUDE.md in those directories or parent directories
 3. **Add valuable learnings** - If you discovered something future developers/agents should know:
-   - API patterns or conventions specific to that module
-   - Gotchas or non-obvious requirements
-   - Dependencies between files
-   - Testing approaches for that area
-   - Configuration or environment requirements
+    - API patterns or conventions specific to that module
+    - Gotchas or non-obvious requirements
+    - Dependencies between files
+    - Testing approaches for that area
+    - Configuration or environment requirements
 
 **Examples of good CLAUDE.md additions:**
+
 - "When modifying X, also update Y to keep them in sync"
 - "This module uses pattern Z for all API calls"
 - "Tests require the dev server running on PORT 3000"
 - "Field names must match the template exactly"
 
 **Do NOT add:**
+
 - Story-specific implementation details
 - Temporary debugging notes
 - Information already in progress.txt
@@ -78,15 +81,16 @@ Only update CLAUDE.md if you have **genuinely reusable knowledge** that would he
 - Keep changes focused and minimal
 - Follow existing code patterns
 
-## Browser Testing (If Available)
+## Browser Verification
 
-For any story that changes UI, verify it works in the browser if you have browser testing tools configured (e.g., via MCP):
+For any story with acceptance criteria that include "Verify in browser using dev-browser skill", you MUST use the dev-browser skill to visually verify the changes:
 
-1. Navigate to the relevant page
+1. Use the dev-browser skill to navigate to the relevant page
 2. Verify the UI changes work as expected
-3. Take a screenshot if helpful for the progress log
+3. Take a screenshot as evidence for the progress log
+4. If verification fails, fix the issue before committing
 
-If no browser tools are available, note in your progress report that manual browser verification is needed.
+This is a required step, not optional. Do NOT skip browser verification for UI stories.
 
 ## Stop Condition
 
