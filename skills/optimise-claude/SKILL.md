@@ -1,7 +1,7 @@
 ---
 name: optimise-claude
 description: Use when auditing, trimming, or restructuring AI instruction files (CLAUDE.md, SKILL.md, AGENTS.md) to reduce context-window consumption. Trigger whenever CLAUDE.md is bloated or Claude ignores instructions, a SKILL.md exceeds 120 lines, skills share duplicated content, AGENTS.md has large inline blocks, or the user asks to optimize, slim down, or reduce token usage.
-model: sonnet
+model: opus
 ---
 
 # Optimise Claude
